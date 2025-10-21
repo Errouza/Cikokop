@@ -9,7 +9,7 @@
     <div class="flex items-center space-x-4">
         <div class="w-48 h-48 bg-gray-100 flex items-center justify-center">
             <!-- Placeholder QR image -->
-            <img src="https://via.placeholder.com/300x300.png?text=QRIS" alt="QRIS placeholder" class="object-cover w-full h-full">
+            <img src="{{ asset('image/QrisGWEH.svg') }}" alt="QRIS placeholder" class="object-cover w-full h-full">
         </div>
         <div>
             <div>Nama: <strong>{{ $order->nama_pelanggan }}</strong></div>
