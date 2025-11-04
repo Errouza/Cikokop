@@ -59,8 +59,28 @@
         let total = 0;
         cart.forEach(item => {
             const div = document.createElement('div');
-            div.className = 'flex justify-between';
-            div.innerHTML = `<div>${item.name} x ${item.qty}</div><div>Rp ${Number(item.price * item.qty).toLocaleString()}</div>`;
+            div.className = 'flex items-center justify-between';
+            const left = document.createElement('div');
+            left.className = 'flex items-center space-x-3';
+            if(item.image){
+                const img = document.createElement('img');
+                img.src = item.image;
+                img.alt = item.name || 'item';
+                img.style.width = '56px';
+                img.style.height = '40px';
+                img.style.objectFit = 'cover';
+                img.className = 'rounded';
+                left.appendChild(img);
+            }
+            const nameDiv = document.createElement('div');
+            nameDiv.innerText = `${item.name} x ${item.qty}`;
+            left.appendChild(nameDiv);
+
+            const right = document.createElement('div');
+            right.innerText = `Rp ${Number(item.price * item.qty).toLocaleString()}`;
+
+            div.appendChild(left);
+            div.appendChild(right);
             container.appendChild(div);
             total += item.price * item.qty;
         });

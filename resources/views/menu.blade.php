@@ -15,7 +15,7 @@
         <div class="bg-white rounded shadow p-4 flex flex-col">
             <div class="h-40 bg-gray-100 rounded mb-3 flex items-center justify-center overflow-hidden">
                 @if($menu->gambar_url)
-                    <img src="{{ $menu->gambar_url }}" alt="{{ $menu->nama }}" class="object-cover w-full h-full">
+                    <img src="{{ asset($menu->gambar_url) }}" alt="{{ $menu->nama }}" class="object-cover w-full h-full">
                 @else
                     <div class="text-gray-400">No Image</div>
                 @endif
@@ -24,7 +24,7 @@
             <p class="text-sm text-gray-600 flex-1">{{ $menu->deskripsi }}</p>
             <div class="mt-3 flex items-center justify-between">
                 <div class="text-green-700 font-bold">Rp {{ number_format($menu->harga, 0, ',', '.') }}</div>
-                <button class="add-to-cart bg-yellow-500 text-white px-3 py-1 rounded" data-id="{{ $menu->id }}" data-name="{{ $menu->nama }}" data-price="{{ $menu->harga }}">Tambah ke Keranjang</button>
+                <button class="add-to-cart bg-yellow-500 text-white px-3 py-1 rounded" data-id="{{ $menu->id }}" data-name="{{ $menu->nama }}" data-price="{{ $menu->harga }}" data-image="{{ $menu->gambar_url }}">Tambah ke Keranjang</button>
             </div>
         </div>
     @endforeach

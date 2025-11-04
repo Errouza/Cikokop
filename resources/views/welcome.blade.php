@@ -3,7 +3,7 @@
 @section('title', 'Welcome')
 
 @section('content')
-<div id="loader-screen" class="min-h-screen flex items-center justify-center" style="background-color: #f3dca6ff;">
+<div id="loader-screen" class="min-h-screen flex items-center justify-center">
 	<div class="text-center">
 		<a href="{{ route('menu') }}" id="logo-link" class="inline-block">
 			<div id="logo-wrap" class="mx-auto w-48 h-48 rounded-full bg-white shadow-lg flex items-center justify-center transform transition-transform duration-800">

@@ -60,6 +60,21 @@ class OrderController extends Controller
         $order = Order::findOrFail($orderId);
         $order->status = 'Processing';
         $order->save();
-        return redirect()->route('payment.show', ['order' => $order->id])->with('success', 'Pembayaran dikonfirmasi. Status: Processing');
+        // Redirect to receipt and trigger auto-print in same tab
+        return redirect()->route('orders.receipt', ['order' => $order->id, 'auto' => 1]);
+    }
+
+    // Show printable receipt
+    public function receipt($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+        return view('receipt', compact('order'));
+    }
+
+    // Admin: list orders (purchases)
+    public function adminIndex()
+    {
+        $orders = Order::orderBy('created_at', 'desc')->get();
+        return view('admin.orders_index', compact('orders'));
     }
 }

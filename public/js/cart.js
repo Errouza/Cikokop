@@ -52,7 +52,8 @@
             const id = target.getAttribute('data-id');
             const name = target.getAttribute('data-name');
             const price = parseFloat(target.getAttribute('data-price'));
-            addToCart({ id: id, name: name, price: price, qty: 1 });
+            const image = target.getAttribute('data-image') || null;
+            addToCart({ id: id, name: name, price: price, image: image, qty: 1 });
             // simple feedback
             target.innerText = 'Added';
             setTimeout(()=> target.innerText = 'Tambah ke Keranjang', 800);
