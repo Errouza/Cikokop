@@ -21,3 +21,10 @@ Route::post('/admin/menus', [MenuController::class, 'store'])->name('admin.menu.
 // Admin listings
 Route::get('/admin/menus', [MenuController::class, 'index'])->name('admin.menu.index');
 Route::get('/admin/orders', [OrderController::class, 'adminIndex'])->name('admin.orders.index');
+// Menu CRUD
+Route::get('/admin/menus/{menu}/edit', [MenuController::class, 'edit'])->name('admin.menu.edit');
+Route::match(['put','patch'], '/admin/menus/{menu}', [MenuController::class, 'update'])->name('admin.menu.update');
+Route::delete('/admin/menus/{menu}', [MenuController::class, 'destroy'])->name('admin.menu.destroy');
+
+// Magic recommender
+Route::get('/magic', [MenuController::class, 'magic'])->name('magic');

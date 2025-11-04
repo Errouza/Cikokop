@@ -38,6 +38,14 @@
                     <td class="px-2 py-2">{{ $menu->kategori ?? '-' }}</td>
                     <td class="px-2 py-2">Rp {{ number_format($menu->harga,0,',','.') }}</td>
                     <td class="px-2 py-2">{{ $menu->created_at->format('Y-m-d H:i') }}</td>
+                    <td class="px-2 py-2">
+                        <a href="{{ route('admin.menu.edit', ['menu' => $menu->id]) }}" class="text-blue-600 mr-2">Edit</a>
+                        <form action="{{ route('admin.menu.destroy', ['menu' => $menu->id]) }}" method="post" style="display:inline-block;" onsubmit="return confirm('Hapus menu ini?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600">Hapus</button>
+                        </form>
+                    </td>
                 </tr>
             @endforeach
         </tbody>

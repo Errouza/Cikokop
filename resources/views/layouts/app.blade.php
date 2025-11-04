@@ -11,7 +11,10 @@
         <header class="bg-transparent shadow-none">
             <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
                 <h1 class="text-xl font-semibold text-gray-800">CIKOP</h1>
-                <a href="{{ route('menu') }}" class="text-sm px-3 py-2 bg-green-600 text-white rounded">Menu</a>
+                <div class="space-x-2">
+                    <a href="{{ route('magic') }}" class="text-sm px-3 py-2 bg-indigo-600 text-white rounded">Magic</a>
+                    <a href="{{ route('menu') }}" class="text-sm px-3 py-2 bg-green-600 text-white rounded">Menu</a>
+                </div>
             </div>
         </header>
 

@@ -17,8 +17,76 @@ class MenuController extends Controller
     // Admin: list all menus
     public function index()
     {
-        $menus = Menu::orderBy('created_at', 'desc')->get();
+        // Order by id ascending as requested
+        $menus = Menu::orderBy('id', 'asc')->get();
         return view('admin.menus_index', compact('menus'));
+    }
+
+    // Show edit form for a menu item
+    public function edit($id)
+    {
+        $menu = Menu::findOrFail($id);
+        return view('admin.edit_menu', compact('menu'));
+    }
+
+    // Update menu
+    public function update(Request $request, $id)
+    {
+        $menu = Menu::findOrFail($id);
+
+        $data = $request->validate([
+            'nama' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'harga' => 'required|numeric|min:0',
+            'kategori' => 'nullable|string|max:100',
+            'gambar_url' => 'nullable|url',
+            'gambar' => 'nullable|image|max:2048',
+            'remove_image' => 'nullable|in:1',
+        ]);
+
+        // Handle removal of existing image
+        if ($request->has('remove_image') && $request->input('remove_image') == '1') {
+            if ($menu->gambar_url) {
+                $relative = ltrim(str_replace('/storage/', '', $menu->gambar_url), '/');
+                Storage::disk('public')->delete($relative);
+            }
+            $data['gambar_url'] = null;
+        }
+
+        // Handle new upload
+        if ($request->hasFile('gambar')) {
+            // delete old
+            if ($menu->gambar_url) {
+                $relative = ltrim(str_replace('/storage/', '', $menu->gambar_url), '/');
+                Storage::disk('public')->delete($relative);
+            }
+            $path = $request->file('gambar')->store('menus', 'public');
+            $data['gambar_url'] = Storage::url($path);
+        }
+
+        $menu->update($data);
+
+        return redirect()->route('admin.menu.index')->with('success', 'Menu updated');
+    }
+
+    // Delete a menu
+    public function destroy($id)
+    {
+        $menu = Menu::findOrFail($id);
+        if ($menu->gambar_url) {
+            $relative = ltrim(str_replace('/storage/', '', $menu->gambar_url), '/');
+            Storage::disk('public')->delete($relative);
+        }
+        $menu->delete();
+        return redirect()->route('admin.menu.index')->with('success', 'Menu deleted');
+    }
+
+    // Magic recommender page (asks a few short questions and suggests menus)
+    public function magic()
+    {
+        $menus = Menu::all();
+        // Pass menus to view as JSON for client-side recommendation
+        return view('magic', compact('menus'));
     }
 
     // Store new menu item
