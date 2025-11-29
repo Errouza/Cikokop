@@ -67,35 +67,30 @@
 
     .cart-item-details {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .cart-item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 4px;
     }
 
     .cart-item-name {
+        font-size: 1rem;
         font-weight: 600;
         color: #2e2e2e;
-        margin-bottom: 0.25rem;
+        flex: 1;
+        margin-right: 8px;
     }
 
     .cart-item-notes {
         font-size: 0.85rem;
         color: #6b7280;
         margin-bottom: 0.25rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .edit-customization-btn {
-        background: none;
-        border: none;
-        color: #6b7280;
-        cursor: pointer;
-        padding: 0.25rem;
-        border-radius: 4px;
-        transition: all 0.2s;
-    }
-    .edit-customization-btn:hover {
-        background-color: #f3f4f6;
-        color: #dca259;
     }
 
     .cart-item-price {
@@ -392,6 +387,160 @@
     .modal-btn-primary:hover {
         background-color: #c58c3e;
     }
+
+    .edit-customization-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background-color: transparent;
+        color: #6b7280;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+        flex-shrink: 0;
+    }
+
+    .edit-customization-btn:hover {
+        background-color: #f3f4f6;
+        color: #dca259;
+    }
+
+    /* Coffee Modal Styles (Same as Menu) */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .modal-overlay.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: scale(0.9);
+        transition: all 0.3s ease;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .modal-overlay.show .modal-content {
+        transform: scale(1);
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2e2e2e;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .modal-options {
+        margin-bottom: 2rem;
+    }
+
+    .modal-option-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-label {
+        font-weight: 600;
+        color: #2e2e2e;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .modal-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .modal-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 12px 20px;
+        border: 2px solid #e5e7eb;
+        background-color: white;
+        color: #2e2e2e;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+
+    .modal-btn:hover {
+        border-color: #dca259;
+        background-color: #fef3e2;
+    }
+
+    .modal-btn.selected {
+        border-color: #dca259;
+        background-color: #dca259;
+        color: white;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .modal-btn-cancel {
+        flex: 1;
+        padding: 14px 24px;
+        border: 2px solid #e5e7eb;
+        background-color: white;
+        color: #2e2e2e;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .modal-btn-cancel:hover {
+        border-color: #6b7280;
+        background-color: #f3f4f6;
+    }
+
+    .modal-btn-primary {
+        flex: 1;
+        padding: 14px 24px;
+        border: none;
+        background-color: #dca259;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .modal-btn-primary:hover {
+        background-color: #c58c3e;
+    }
 </style>
 @endpush
 
@@ -410,34 +559,51 @@
         <div class="empty-cart">
             <div class="empty-cart-icon">🛒</div>
             <div class="empty-cart-text">Keranjang Kosong</div>
-            <a href="{{ route('menu') }}" class="empty-cart-btn">Kembali ke Menu</a>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ route('menu') }}" class="empty-cart-btn">Kembali ke Menu</a>
+                <a href="{{ route('cart.index', ['clear' => 'true']) }}" class="empty-cart-btn" style="background-color: #ef4444;">
+                    🔄 Start Fresh
+                </a>
+            </div>
         </div>
     @else
+        <div class="cart-header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <a href="{{ route('menu') }}" class="empty-cart-btn" style="margin: 0; padding: 0.5rem 1rem; font-size: 0.9rem;">
+                ← Tambah Item
+            </a>
+            <a href="{{ route('cart.forceClear') }}" class="delete-btn" style="width: auto; height: auto; padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-size: 0.9rem;" onclick="return confirm('Yakin ingin mengosongkan keranjang?')">
+                🗑️ Kosongkan Keranjang
+            </a>
+        </div>
         <div class="cart-list">
-            @foreach($cart as $id => $item)
-                <div class="cart-item" data-id="{{ $id }}">
+            @foreach($cart as $rowId => $item)
+                <div class="cart-item" data-id="{{ $rowId }}">
                     <img src="{{ $item['image'] ?? asset('image/default-product.jpg') }}" alt="{{ $item['name'] }}" class="cart-item-img">
                     <div class="cart-item-details">
-                        <div class="cart-item-name">{{ $item['name'] }}</div>
-                        @if(!empty($item['notes']))
-                            <div class="cart-item-notes">
-                                {{ $item['notes'] }}
-                                <button class="edit-customization-btn" data-id="{{ $id }}" data-ice="{{ $item['ice'] ?? 'normal' }}" data-sugar="{{ $item['sugar'] ?? 'normal' }}">
+                        <div class="cart-item-header">
+                            <div class="cart-item-name">{{ $item['name'] }}</div>
+                            @if(in_array(($item['category'] ?? 'food'), ['coffee', 'matcha']))
+                                <button class="edit-customization-btn" data-id="{{ $rowId }}" data-ice="{{ $item['ice'] ?? 'normal' }}" data-sugar="{{ $item['sugar'] ?? 'normal' }}" data-category="{{ $item['category'] ?? 'coffee' }}" title="Edit Kustomisasi">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </button>
+                            @endif
+                        </div>
+                        @if(!empty($item['notes']))
+                            <div class="cart-item-notes">
+                                {{ $item['notes'] }}
                             </div>
                         @endif
                         <div class="cart-item-price">Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
                     </div>
                     <div class="cart-item-controls">
                         <div class="qty-controller">
-                            <button class="qty-btn" data-action="decrement" data-id="{{ $id }}" data-current-qty="{{ $item['quantity'] ?? 1 }}">−</button>
-                            <span class="qty-count" data-id="{{ $id }}">{{ $item['quantity'] ?? 1 }}</span>
-                            <button class="qty-btn" data-action="increment" data-id="{{ $id }}">+</button>
+                            <button class="qty-btn" data-action="decrement" data-id="{{ $rowId }}" data-current-qty="{{ $item['quantity'] ?? 1 }}">−</button>
+                            <span class="qty-count" data-id="{{ $rowId }}">{{ $item['quantity'] ?? 1 }}</span>
+                            <button class="qty-btn" data-action="increment" data-id="{{ $rowId }}">+</button>
                         </div>
-                        <button class="delete-btn" data-id="{{ $id }}">
+                        <button class="delete-btn" data-id="{{ $rowId }}">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
@@ -449,39 +615,30 @@
     @endif
 </div>
 
-<!-- Edit Customization Modal -->
-<div id="editModal" class="modal" style="display: none;">
+<!-- Coffee Customization Modal (Same as Menu) -->
+<div class="modal-overlay" id="coffee-modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">Edit Kustomisasi</h3>
-            <button type="button" class="modal-close" onclick="closeEditModal()">&times;</button>
-        </div>
-        
-        <div class="modal-body">
-            <input type="hidden" id="editItemId" value="">
-            
-            <div class="modal-section">
+        <h3 class="modal-title">Kustomisasi Kopi</h3>
+        <div class="modal-options">
+            <div class="modal-option-group">
                 <div class="modal-label">Tingkat Es</div>
-                <div class="modal-btn-group">
+                <div class="modal-buttons">
                     <button type="button" class="modal-btn" data-option="ice" data-value="less">Es Sedikit</button>
                     <button type="button" class="modal-btn selected" data-option="ice" data-value="normal">Es Normal</button>
-                    <button type="button" class="modal-btn" data-option="ice" data-value="no">Tidak Ada Es</button>
                 </div>
             </div>
-            
-            <div class="modal-section">
+            <div class="modal-option-group">
                 <div class="modal-label">Tingkat Gula</div>
-                <div class="modal-btn-group">
+                <div class="modal-buttons">
                     <button type="button" class="modal-btn" data-option="sugar" data-value="less">Gula Sedikit</button>
                     <button type="button" class="modal-btn selected" data-option="sugar" data-value="normal">Gula Normal</button>
                     <button type="button" class="modal-btn" data-option="sugar" data-value="no">Tanpa Gula</button>
                 </div>
             </div>
         </div>
-        
-        <div class="modal-footer">
-            <button type="button" class="modal-btn-cancel" onclick="closeEditModal()">Batal</button>
-            <button type="button" class="modal-btn-primary" onclick="saveCustomization()">Simpan Perubahan</button>
+        <div class="modal-actions">
+            <button type="button" id="modal-cancel" class="modal-btn-cancel">Batal</button>
+            <button type="button" id="modal-confirm" class="modal-btn-primary">Simpan</button>
         </div>
     </div>
 </div>
@@ -660,7 +817,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Increment buttons
         document.querySelectorAll('.qty-btn[data-action="increment"]').forEach(btn => {
             btn.addEventListener('click', async function() {
-                const id = parseInt(this.dataset.id);
+                const id = this.dataset.id; // Keep as string (rowId)
                 await updateQuantity(id, 1);
             });
         });
@@ -668,7 +825,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Decrement buttons
         document.querySelectorAll('.qty-btn[data-action="decrement"]').forEach(btn => {
             btn.addEventListener('click', async function() {
-                const id = parseInt(this.dataset.id);
+                const id = this.dataset.id; // Keep as string (rowId)
                 const currentQty = parseInt(this.dataset.currentQty);
                 if (currentQty - 1 <= 0) {
                     // Instantly remove from DOM
@@ -685,7 +842,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Delete buttons
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
-                const id = parseInt(this.dataset.id);
+                const id = this.dataset.id; // Keep as string (rowId)
                 // Instantly remove from DOM
                 const row = this.closest('.cart-item');
                 if (row) row.remove();
@@ -697,7 +854,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Edit customization buttons
         document.querySelectorAll('.edit-customization-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                const id = parseInt(this.dataset.id);
+                const id = this.dataset.id; // Keep as string (rowId)
                 const ice = this.dataset.ice || 'normal';
                 const sugar = this.dataset.sugar || 'normal';
                 openEditModal(id, ice, sugar);
@@ -768,6 +925,134 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Remove item error:', err);
         }
     }
+
+    // Edit Customization Functions (Same as Menu)
+    let currentEditItem = null;
+
+    function openCoffeeModal(id, name, ice, sugar, category = 'coffee') {
+        currentEditItem = { id, name, ice, sugar, category };
+        const modal = document.getElementById('coffee-modal');
+        // Set title based on category
+        const title = category === 'matcha' ? 'Kustomisasi Matcha' : 'Kustomisasi Kopi';
+        modal.querySelector('.modal-title').textContent = title;
+        modal.classList.add('show');
+        
+        // Reset selections
+        modal.querySelectorAll('.modal-btn.selected').forEach(btn => btn.classList.remove('selected'));
+        
+        // Set current selections
+        modal.querySelector(`.modal-btn[data-option="ice"][data-value="${ice}"]`)?.classList.add('selected');
+        modal.querySelector(`.modal-btn[data-option="sugar"][data-value="${sugar}"]`)?.classList.add('selected');
+    }
+
+    function closeCoffeeModal() {
+        const modal = document.getElementById('coffee-modal');
+        modal.classList.remove('show');
+        currentEditItem = null;
+    }
+
+    // Edit customization buttons
+    document.querySelectorAll('.edit-customization-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const ice = this.dataset.ice || 'normal';
+            const sugar = this.dataset.sugar || 'normal';
+            const name = this.closest('.cart-item').querySelector('.cart-item-name').textContent;
+            const category = this.dataset.category || 'coffee'; // Get category from data attribute
+            openCoffeeModal(id, name, ice, sugar, category);
+        });
+    });
+
+    // Modal event listeners
+    document.getElementById('modal-cancel').addEventListener('click', closeCoffeeModal);
+    
+    document.getElementById('coffee-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeCoffeeModal();
+    });
+
+    document.getElementById('modal-confirm').addEventListener('click', async function() {
+        if (!currentEditItem) return;
+        
+        const modal = document.getElementById('coffee-modal');
+        const ice = modal.querySelector('.modal-btn[data-option="ice"].selected').getAttribute('data-value');
+        const sugar = modal.querySelector('.modal-btn[data-option="sugar"].selected').getAttribute('data-value');
+        
+        console.log('saveCustomization - itemId:', currentEditItem.id);
+        console.log('saveCustomization - ice:', ice, 'sugar:', sugar);
+        
+        try {
+            const response = await fetch('{{ route("cart.updateCustomization") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                },
+                body: JSON.stringify({ 
+                    id: currentEditItem.id, 
+                    ice: ice, 
+                    sugar: sugar 
+                })
+            });
+            
+            console.log('saveCustomization - response status:', response.status);
+            const result = await response.json();
+            console.log('saveCustomization - result:', result);
+            
+            if (result.success) {
+                // Update cart total
+                const totalEl = document.getElementById('cart-total');
+                if (totalEl) totalEl.textContent = result.cart_total.toLocaleString('id-ID');
+                
+                // Find the cart item element
+                const cartItem = document.querySelector(`.cart-item[data-id="${currentEditItem.id}"]`);
+                console.log('saveCustomization - cartItem:', cartItem);
+                
+                if (cartItem) {
+                    // Update or add notes display
+                    let notesEl = cartItem.querySelector('.cart-item-notes');
+                    if (!notesEl) {
+                        const detailsEl = cartItem.querySelector('.cart-item-details');
+                        const priceEl = detailsEl.querySelector('.cart-item-price');
+                        
+                        // Create notes element
+                        notesEl = document.createElement('div');
+                        notesEl.className = 'cart-item-notes';
+                        detailsEl.insertBefore(notesEl, priceEl);
+                    }
+                    
+                    // Update notes content
+                    notesEl.textContent = result.notes;
+                    console.log('saveCustomization - updated notes to:', result.notes);
+                    
+                    // Update edit button data attributes
+                    const editBtn = cartItem.querySelector('.edit-customization-btn');
+                    if (editBtn) {
+                        editBtn.dataset.ice = ice;
+                        editBtn.dataset.sugar = sugar;
+                        console.log('saveCustomization - updated edit button attributes');
+                    }
+                }
+                
+                // Close modal
+                closeCoffeeModal();
+            } else {
+                console.error('saveCustomization - server returned error:', result);
+                alert('Gagal mengubah kustomisasi: ' + (result.message || 'Unknown error'));
+            }
+        } catch (err) {
+            console.error('Update customization error:', err);
+            alert('Terjadi kesalahan saat mengubah kustomisasi: ' + err.message);
+        }
+    });
+
+    // Modal button event listeners
+    document.querySelectorAll('.modal-btn[data-option]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const option = this.getAttribute('data-option');
+            document.querySelectorAll(`.modal-btn[data-option="${option}"]`).forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
 
     // Initial render
     attachCartEvents();

@@ -504,8 +504,13 @@
 <!-- Floating Cart Bar - Footer Style -->
 <div class="floating-cart-bar" id="floating-cart-bar">
     <div class="container mx-auto flex justify-end items-center gap-5">
-        <div class="floating-cart-info">
-            Total Bayar: <strong>Rp <span id="floating-total-price">0</span></strong>
+        <div class="floating-cart-info flex flex-row items-center gap-2">
+            <span id="footer-qty">0 Item</span>
+            <span>•</span>
+            <div class="flex flex-row items-center gap-1">
+                <span>Total Bayar:</span>
+                <strong>Rp <span id="floating-total-price">{{ number_format($total ?? 0, 0, ',', '.') }}</span></strong>
+            </div>
         </div>
         <a href="{{ route('cart.index') }}" class="floating-cart-btn">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -571,8 +576,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateHeader(cart) {
-        const totalItems = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
-        const totalPrice = cart.reduce((sum, item) => sum + (sanitizePrice(item.price) * (item.qty || 0)), 0);
+        // Handle both old structure (array) and new structure (object with row_id keys)
+        let totalItems = 0;
+        let totalPrice = 0;
+        
+        if (Array.isArray(cart)) {
+            // Old structure - array of items
+            totalItems = cart.reduce((sum, item) => sum + (item.qty || item.quantity || 0), 0);
+            totalPrice = cart.reduce((sum, item) => sum + (sanitizePrice(item.price) * (item.qty || item.quantity || 0)), 0);
+        } else {
+            // New structure - object with row_id keys
+            Object.values(cart).forEach(item => {
+                totalItems += (item.quantity || 0);
+                totalPrice += sanitizePrice(item.price) * (item.quantity || 0);
+            });
+        }
+        
         const countEl = document.getElementById('cart-count');
         const totalEl = document.getElementById('cart-total');
         if (countEl) countEl.textContent = totalItems;
@@ -580,26 +599,90 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateFloatingBar(cart) {
-        const totalItems = cart.reduce((sum, item) => sum + (item.qty || 0), 0);
-        const totalPrice = cart.reduce((sum, item) => sum + (sanitizePrice(item.price) * (item.qty || 0)), 0);
-        const floatingBar = document.getElementById('floating-cart-bar');
-        const floatingTotal = document.getElementById('floating-total-price');
+        // Handle both old structure (array) and new structure (object with row_id keys)
+        let totalItems = 0;
+        let totalPrice = 0;
+        
+        if (Array.isArray(cart)) {
+            // Old structure - array of items
+            totalItems = cart.reduce((sum, item) => sum + (item.qty || item.quantity || 0), 0);
+            totalPrice = cart.reduce((sum, item) => sum + (sanitizePrice(item.price) * (item.qty || item.quantity || 0)), 0);
+        } else {
+            // New structure - object with row_id keys
+            Object.values(cart).forEach(item => {
+                totalItems += (item.quantity || 0);
+                totalPrice += sanitizePrice(item.price) * (item.quantity || 0);
+            });
+        }
+        
+        // Use the new updateFooter function
+        updateFooter(totalItems, totalPrice);
+    }
 
-        if (totalItems > 0) {
+    function getQtyById(id) {
+        const cart = getCart();
+        let qty = 0;
+        
+        if (Array.isArray(cart)) {
+            // Old structure - array of items
+            const item = cart.find(i => i.id == id || i.product_id == id);
+            qty = item ? (item.qty || item.quantity || 0) : 0;
+        } else {
+            // New structure - object with row_id keys
+            // Find all items with matching product_id and sum quantities
+            Object.values(cart).forEach(item => {
+                if (item.product_id == id) {
+                    qty += (item.quantity || 0);
+                }
+            });
+        }
+        
+        return qty;
+    }
+
+    // Dynamic footer update function
+    function updateFooter(quantity, total) {
+        const footerQtyEl = document.getElementById('footer-qty');
+        const footerTotalEl = document.getElementById('floating-total-price');
+        const floatingBar = document.getElementById('floating-cart-bar');
+        
+        // Update quantity display
+        if (footerQtyEl) {
+            footerQtyEl.textContent = `${quantity} Item`;
+        }
+        
+        // Update total display
+        if (footerTotalEl) {
+            footerTotalEl.textContent = total.toLocaleString('id-ID');
+        }
+        
+        // Show/hide footer based on cart state
+        if (quantity > 0) {
             floatingBar.classList.add('show');
-            floatingTotal.textContent = totalPrice.toLocaleString('id-ID');
         } else {
             floatingBar.classList.remove('show');
         }
     }
 
-    function getQtyById(id) {
-        const cart = getCart();
-        const item = cart.find(i => i.id == id);
-        return item ? (item.qty || 0) : 0;
+    // Legacy function for backward compatibility
+    function updateFooterTotal(newTotal) {
+        // Get current quantity from footer or default to 0
+        const footerQtyEl = document.getElementById('footer-qty');
+        const currentQty = footerQtyEl ? 
+            parseInt(footerQtyEl.textContent.split(' ')[0]) || 0 : 0;
+        
+        updateFooter(currentQty, newTotal);
     }
 
-    async function setQtyForProduct(id, name, price, image, qty, notes = '', ice = 'normal', sugar = 'normal') {
+    async function setQtyForProduct(id, name, price, image, qty, notes = '', ice = 'normal', sugar = 'normal', category = 'food') {
+        // Debug: Log the price values
+        console.log('setQtyForProduct - Raw price:', price, 'type:', typeof price);
+        
+        // Ensure price is a number
+        price = parseFloat(price) || 0;
+        
+        console.log('setQtyForProduct - Processed price:', price, 'type:', typeof price);
+        
         try {
             const response = await fetch('{{ route("cart.add") }}', {
                 method: 'POST',
@@ -615,7 +698,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     quantity: qty, 
                     notes, 
                     ice, 
-                    sugar 
+                    sugar,
+                    category  // Add category
                 })
             });
             
@@ -625,6 +709,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update cart count in header
                 const countEl = document.getElementById('cart-count');
                 if (countEl) countEl.textContent = result.total_items;
+                
+                // Update footer with both quantity and total
+                updateFooter(result.total_quantity, result.cart_total);
                 
                 // Update floating cart bar if exists
                 updateFloatingBarFromServer();
@@ -636,19 +723,53 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (err) {
             console.error('Add to cart error:', err);
-            // Fallback to localStorage for now
+            // Fallback to localStorage with new structure
             let cart = getCart();
-            let existing = cart.find(i => i.id == id);
-
+            
+            // Generate row ID for localStorage consistency
+            const customizationKey = JSON.stringify([ice, sugar]);
+            const rowId = id + '_' + btoa(customizationKey).replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
+            
+            if (Array.isArray(cart)) {
+                // Convert to new structure
+                let newCart = {};
+                cart.forEach(item => {
+                    const itemKey = (item.product_id || item.id) + '_' + btoa(JSON.stringify([item.ice || 'normal', item.sugar || 'normal'])).replace(/[^a-zA-Z0-9]/g, '').substring(0, 8);
+                    newCart[itemKey] = {
+                        row_id: itemKey,
+                        product_id: item.product_id || item.id,
+                        name: item.name,
+                        price: item.price,
+                        image: item.image || '',
+                        quantity: item.qty || item.quantity || 0,
+                        notes: item.notes || '',
+                        ice: item.ice || 'normal',
+                        sugar: item.sugar || 'normal'
+                    };
+                });
+                cart = newCart;
+            }
+            
+            let existing = cart[rowId];
             if (!existing && qty > 0) {
-                cart.push({ id: id, name: name, price: sanitizePrice(price), image: image, qty: qty, notes: notes, ice: ice, sugar: sugar });
+                cart[rowId] = {
+                    row_id: rowId,
+                    product_id: id,
+                    name: name,
+                    price: sanitizePrice(price),
+                    image: image,
+                    quantity: qty,
+                    notes: notes,
+                    ice: ice,
+                    sugar: sugar
+                };
             } else if (existing) {
-                existing.qty = qty;
+                existing.quantity = qty;
                 existing.notes = notes;
                 existing.ice = ice;
                 existing.sugar = sugar;
-                if (existing.qty <= 0) {
-                    cart = cart.filter(i => i.id != id);
+                if (existing.quantity <= 0) {
+                    delete cart[rowId];
                 }
             }
 
@@ -659,11 +780,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function updateFloatingBarFromServer() {
         try {
-            const response = await fetch('{{ route("cart.index") }}');
-            const html = await response.text();
-            // We can't easily parse the HTML, so for now just update based on localStorage
-            const cart = getCart();
-            updateFloatingBar(cart);
+            const response = await fetch('{{ route("cart.status") }}');
+            const result = await response.json();
+            
+            if (result.success) {
+                // Update footer with server data (source of truth)
+                updateFooter(result.total_quantity, result.cart_total);
+                
+                // Update header cart count
+                const countEl = document.getElementById('cart-count');
+                if (countEl) countEl.textContent = result.total_items;
+            }
         } catch (err) {
             console.error('Failed to update floating bar from server:', err);
         }
@@ -682,10 +809,10 @@ document.addEventListener('DOMContentLoaded', function() {
             btn.addEventListener('click', async function () {
                 const card = container.closest('.menu-card');
                 const category = card.getAttribute('data-category');
-                if (category === 'coffee') {
-                    openCoffeeModal(id, name, price, image);
+                if (category === 'coffee' || category === 'matcha') {
+                    openCoffeeModal(id, name, price, image, category);
                 } else {
-                    const newQty = await setQtyForProduct(id, name, price, image, 1);
+                    const newQty = await setQtyForProduct(id, name, price, image, 1, '', 'normal', 'normal', category);
                     renderControl(container, id, name, price, image, newQty);
                 }
             });
@@ -701,15 +828,36 @@ document.addEventListener('DOMContentLoaded', function() {
             const plus = container.querySelector('.qty-plus');
 
             minus.addEventListener('click', async function () {
-                const currentQty = getQtyById(id);
-                const newQty = await setQtyForProduct(id, name, price, image, Math.max(0, currentQty - 1));
-                renderControl(container, id, name, price, image, newQty);
+                // Get current displayed quantity
+                const currentQtyEl = container.querySelector('.qty-count');
+                const currentQty = parseInt(currentQtyEl.textContent) || 0;
+                const newQty = Math.max(0, currentQty - 1);
+                
+                const card = container.closest('.menu-card');
+                const category = card.getAttribute('data-category');
+                
+                if (newQty <= 0) {
+                    // If quantity becomes 0, send update to server and revert to circle button
+                    await setQtyForProduct(id, name, price, image, 0, '', 'normal', 'normal', category);
+                    renderControl(container, id, name, price, image, 0);
+                } else {
+                    // Update quantity
+                    const updatedQty = await setQtyForProduct(id, name, price, image, newQty, '', 'normal', 'normal', category);
+                    renderControl(container, id, name, price, image, updatedQty);
+                }
             });
 
             plus.addEventListener('click', async function () {
-                const currentQty = getQtyById(id);
-                const newQty = await setQtyForProduct(id, name, price, image, currentQty + 1);
-                renderControl(container, id, name, price, image, newQty);
+                // Get current displayed quantity
+                const currentQtyEl = container.querySelector('.qty-count');
+                const currentQty = parseInt(currentQtyEl.textContent) || 0;
+                const newQty = currentQty + 1;
+                
+                const card = container.closest('.menu-card');
+                const category = card.getAttribute('data-category');
+                
+                const updatedQty = await setQtyForProduct(id, name, price, image, newQty, '', 'normal', 'normal', category);
+                renderControl(container, id, name, price, image, updatedQty);
             });
         }
     }
@@ -717,11 +865,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Coffee Customization Modal
     let currentCoffeeItem = null;
 
-    function openCoffeeModal(id, name, price, image) {
-        currentCoffeeItem = { id, name, price, image };
+    function openCoffeeModal(id, name, price, image, category = 'coffee') {
+        currentCoffeeItem = { id, name, price, image, category };
         const modal = document.getElementById('coffee-modal');
-        // Set title to coffee name
-        modal.querySelector('.modal-title').textContent = name;
+        // Set title based on category
+        const title = category === 'matcha' ? 'Kustomisasi Matcha' : 'Kustomisasi Kopi';
+        modal.querySelector('.modal-title').textContent = title;
         modal.classList.add('show');
         // Reset selections
         modal.querySelectorAll('.modal-btn.selected').forEach(btn => btn.classList.remove('selected'));
@@ -745,7 +894,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const ice = modal.querySelector('.modal-btn[data-option="ice"].selected').getAttribute('data-value');
         const sugar = modal.querySelector('.modal-btn[data-option="sugar"].selected').getAttribute('data-value');
         const notes = `Es: ${ice === 'less' ? 'Sedikit' : (ice === 'no' ? 'Tidak Ada' : 'Normal')}, Gula: ${sugar === 'less' ? 'Sedikit' : (sugar === 'no' ? 'Tanpa Gula' : 'Normal')}`;
-        const newQty = await setQtyForProduct(currentCoffeeItem.id, currentCoffeeItem.name, currentCoffeeItem.price, currentCoffeeItem.image, 1, notes, ice, sugar);
+        const category = currentCoffeeItem.category || 'coffee';
+        const newQty = await setQtyForProduct(currentCoffeeItem.id, currentCoffeeItem.name, currentCoffeeItem.price, currentCoffeeItem.image, 1, notes, ice, sugar, category);
         const container = document.querySelector(`.quantity-control[data-id="${currentCoffeeItem.id}"]`);
         if (container) {
             renderControl(container, currentCoffeeItem.id, currentCoffeeItem.name, currentCoffeeItem.price, currentCoffeeItem.image, newQty);
@@ -762,13 +912,39 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Initialize all quantity controls
-    document.querySelectorAll('.quantity-control').forEach(function (container) {
-        const id = container.getAttribute('data-id');
+    document.querySelectorAll('.quantity-control').forEach(async function (container) {
+        const productId = container.getAttribute('data-id');
         const name = container.getAttribute('data-name');
         const price = parseFloat(container.getAttribute('data-price'));
         const image = container.getAttribute('data-image') || '';
-        const qty = getQtyById(id);
-        renderControl(container, id, name, price, image, qty);
+        
+        // Get current quantity from server
+        try {
+            const response = await fetch('{{ route("cart.status") }}');
+            const result = await response.json();
+            
+            if (result.success && result.cart) {
+                // Find item quantity from server cart by product_id (for default customization)
+                // For menu, we'll show the quantity of the first matching product (or sum all variations)
+                const matchingItems = result.cart.filter(item => item.product_id == productId);
+                const totalQty = matchingItems.reduce((sum, item) => sum + item.quantity, 0);
+                
+                // Update footer with server data
+                updateFooter(result.total_quantity, result.cart_total);
+                
+                // Render control with total quantity for this product
+                renderControl(container, productId, name, price, image, totalQty);
+            } else {
+                // Fallback to localStorage
+                const qty = getQtyById(productId);
+                renderControl(container, productId, name, price, image, qty);
+            }
+        } catch (err) {
+            console.error('Failed to get cart from server:', err);
+            // Fallback to localStorage
+            const qty = getQtyById(productId);
+            renderControl(container, productId, name, price, image, qty);
+        }
     });
 
     // Initial UI updates

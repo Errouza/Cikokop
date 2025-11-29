@@ -13,9 +13,39 @@ use App\Http\Controllers\CartController;
 
 Route::get('/menu', function () {
     $menus = Menu::orderBy('id', 'asc')->get();
-    return view('menu', compact('menus'));
+    
+    // Calculate cart total for footer with price sanitization
+    $cart = session()->get('cart', []);
+    $total = 0;
+    foreach ($cart as $cartItem) {
+        // Sanitize price before calculation
+        $cleanPrice = 0;
+        if (is_numeric($cartItem['price'])) {
+            $cleanPrice = (float)$cartItem['price'];
+        } else {
+            // Remove formatting characters
+            $cleanPrice = (float) preg_replace('/[^0-9.]/', '', $cartItem['price'] ?? '0');
+        }
+        $total += $cleanPrice * ($cartItem['quantity'] ?? 0);
+    }
+    
+    return view('menu', compact('menus', 'total'));
 })->name('menu');
+
+Route::get('/cart/clear', function () {
+    session()->forget('cart');
+    // Also clear any other potential cart-related session data
+    session()->forget(['cart_items', 'cart_total', 'temp_cart']);
+    return redirect()->route('cart.index')->with('success', 'Cart cleared successfully!');
+})->name('cart.clear');
+
+Route::get('/cart/force-clear', function () {
+    // Force clear all session data to eliminate zombie data
+    session()->flush();
+    return redirect()->route('cart.index')->with('success', 'All session data cleared! Cart is now empty.');
+})->name('cart.forceClear');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('/cart/status', [CartController::class, 'getCartStatus'])->name('cart.status');
 Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
 Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::post('/cart/update-customization', [CartController::class, 'updateCustomization'])->name('cart.updateCustomization');
