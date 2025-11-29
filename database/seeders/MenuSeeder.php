@@ -65,28 +65,28 @@ class MenuSeeder extends Seeder
                 'deskripsi' => 'Ayam katsu krispi dengan nasi dan sayuran.',
                 'harga' => 15000,
                 'kategori' => 'ricebowl',
-                'gambar_url' => 'image/FotoRicebowl/AyamKatsu.png'
+                'gambar_url' => 'image/fotorb/ayamkatsu.png'
             ],
             [
                 'nama' => 'Ayam Teriyaki',
                 'deskripsi' => 'Ayam panggang saus teriyaki dengan nasi.',
                 'harga' => 15000,
                 'kategori' => 'ricebowl',
-                'gambar_url' => 'image/FotoRicebowl/AyamTeriyaki.png'
+                'gambar_url' => 'image/fotorb/ayamteriyaki.png'
             ],
             [
                 'nama' => 'Ayam Barbeque',
                 'deskripsi' => 'Ayam panggang saus barbeque dengan nasi.',
                 'harga' => 15000,
                 'kategori' => 'ricebowl',
-                'gambar_url' => 'image/FotoRicebowl/AyamBarbeque.png'
+                'gambar_url' => 'image/fotorb/ayambarbeque.png'
             ],
             [
                 'nama' => 'Cumi Goreng Tepung',
                 'deskripsi' => 'Cumi goreng tepung krispi dengan nasi.',
                 'harga' => 15000,
                 'kategori' => 'ricebowl',
-                'gambar_url' => 'image/FotoRicebowl/CumiGorengTepung.png'
+                'gambar_url' => 'image/fotorb/cumitepung.png'
             ],
         ];
 
