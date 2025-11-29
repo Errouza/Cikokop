@@ -2,19 +2,120 @@
 
 @section('title', 'Saran Ajaib - Pilih Mood')
 
-@section('content')
-<div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-    <h2 class="text-2xl font-bold mb-4">Saran Ajaib: Temukan Menu Sesuai Mood</h2>
+@push('styles')
+<style>
+    .magic-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
-    <p class="text-gray-600 mb-4">Jawab beberapa pertanyaan singkat, lalu kami akan merekomendasikan menu yang cocok untuk mood Anda.</p>
+    .magic-card {
+        background-color: #ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        padding: 2rem;
+    }
+
+    .magic-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #2e2e2e;
+        margin-bottom: 0.5rem;
+    }
+
+    .magic-subtitle {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .magic-label {
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 0.25rem;
+        color: #2e2e2e;
+    }
+
+    .magic-select {
+        width: 100%;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 0.6rem 0.8rem;
+        font-size: 0.95rem;
+        background-color: #ffffff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .magic-select:focus {
+        outline: none;
+        border-color: #dca259;
+        box-shadow: 0 0 0 3px rgba(220,162,89,0.25);
+    }
+
+    .magic-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary-magic {
+        background-color: #dca259;
+        color: #ffffff;
+        border-radius: 9999px;
+        padding: 0.6rem 1.6rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+    }
+
+    .btn-primary-magic:hover {
+        background-color: #c58c3e;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+    }
+
+    .btn-secondary-magic {
+        background-color: transparent;
+        color: #2e2e2e;
+        border-radius: 9999px;
+        padding: 0.6rem 1.4rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        border: 1px solid #2e2e2e;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .btn-secondary-magic:hover {
+        background-color: #f3f4f6;
+    }
+
+    .magic-recommendations {
+        margin-top: 2rem;
+    }
+</style>
+@endpush
+
+@section('content')
+<div class="magic-container px-4 py-6">
+    <div class="magic-card">
+        <h2 class="magic-title">Saran Ajaib: Temukan Menu Sesuai Mood</h2>
+
+        <p class="magic-subtitle">Jawab beberapa pertanyaan singkat, lalu kami akan merekomendasikan menu yang cocok untuk mood Anda.</p>
 
     {{-- embed menus JSON in a data attribute to avoid inline blade in JS --}}
     <div id="magic-data" data-menus='{{ json_encode($menus) }}' style="display:none;"></div>
 
     <div id="questionnaire" class="space-y-4">
         <div>
-            <label class="block font-semibold mb-1">1) Bagaimana mood Anda sekarang?</label>
-            <select id="mood" class="w-full border px-3 py-2 rounded">
+            <label class="magic-label">1) Bagaimana mood Anda sekarang?</label>
+            <select id="mood" class="magic-select">
                 <option value="happy">Bahagia</option>
                 <option value="tired">Lelah</option>
                 <option value="sad">Sedih</option>
@@ -25,8 +126,8 @@
         </div>
 
         <div>
-            <label class="block font-semibold mb-1">2) Anda sedang ingin sesuatu yang...</label>
-            <select id="crave" class="w-full border px-3 py-2 rounded">
+            <label class="magic-label">2) Anda sedang ingin sesuatu yang...</label>
+            <select id="crave" class="magic-select">
                 <option value="any">Bebas</option>
                 <option value="sweet">Manis</option>
                 <option value="savory">Gurih</option>
@@ -36,22 +137,23 @@
         </div>
 
         <div>
-            <label class="block font-semibold mb-1">3) Waktu saat ini</label>
-            <select id="timeOfDay" class="w-full border px-3 py-2 rounded">
+            <label class="magic-label">3) Waktu saat ini</label>
+            <select id="timeOfDay" class="magic-select">
                 <option value="morning">Pagi</option>
                 <option value="afternoon">Siang</option>
                 <option value="evening">Malam</option>
             </select>
         </div>
 
-        <div class="flex space-x-2">
-            <button id="recommendBtn" class="bg-indigo-600 text-white px-4 py-2 rounded">Minta Saran</button>
-            <button id="clearBtn" class="bg-gray-200 px-4 py-2 rounded">Reset</button>
+        <div class="magic-actions">
+            <button id="recommendBtn" class="btn-primary-magic">Minta Saran</button>
+            <button id="clearBtn" class="btn-secondary-magic">Reset</button>
         </div>
     </div>
 
-    <div id="recommendations" class="mt-6">
+    <div id="recommendations" class="magic-recommendations">
         <!-- rekomendasi muncul di sini -->
+    </div>
     </div>
 </div>
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Menu;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,8 +9,15 @@ Route::get('/', function () {
 
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\CartController;
 
-Route::get('/menu', [OrderController::class, 'menu'])->name('menu');
+Route::get('/menu', function () {
+    $menus = Menu::orderBy('id', 'asc')->get();
+    return view('menu', compact('menus'));
+})->name('menu');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
 Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::get('/payment/{order}', [OrderController::class, 'payment'])->name('payment.show');
