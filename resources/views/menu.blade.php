@@ -300,10 +300,17 @@
     .modal-content {
         background-color: #ffffff;
         border-radius: 16px;
-        padding: 1.5rem;
-        max-width: 400px;
-        width: 100%;
+        padding: 2rem;
+        max-width: 600px;
+        width: 90%;
         box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    @media (min-width: 768px) {
+        .modal-content {
+            width: 80%;
+            max-width: 600px;
+        }
     }
     .modal-title {
         font-size: 1.25rem;
@@ -333,14 +340,15 @@
     }
     .modal-btn {
         flex: 1;
-        padding: 0.5rem 1rem;
+        padding: 12px 20px;
         border-radius: 8px;
         font-weight: 500;
-        font-size: 0.85rem;
+        font-size: 0.95rem;
         cursor: pointer;
-        border: 1px solid #e5e7eb;
+        border: 2px solid #e5e7eb;
         background-color: #ffffff;
         transition: all 0.2s ease;
+        margin: 4px;
     }
     .modal-btn.selected {
         background-color: var(--primary);
@@ -357,9 +365,10 @@
         background-color: var(--primary);
         color: #ffffff;
         border: none;
-        border-radius: 9999px;
-        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        padding: 14px 24px;
         font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
@@ -371,10 +380,11 @@
         flex: 1;
         background-color: transparent;
         color: var(--text);
-        border: 1px solid var(--text);
-        border-radius: 9999px;
-        padding: 0.6rem 1.5rem;
+        border: 2px solid var(--text);
+        border-radius: 8px;
+        padding: 14px 24px;
         font-weight: 600;
+        font-size: 1rem;
         cursor: pointer;
         transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
@@ -497,7 +507,7 @@
         <div class="floating-cart-info">
             Total Bayar: <strong>Rp <span id="floating-total-price">0</span></strong>
         </div>
-        <a href="{{ route('cart') }}" class="floating-cart-btn">
+        <a href="{{ route('cart.index') }}" class="floating-cart-btn">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
             </svg>
@@ -523,6 +533,7 @@
                 <div class="modal-buttons">
                     <button type="button" class="modal-btn" data-option="sugar" data-value="less">Gula Sedikit</button>
                     <button type="button" class="modal-btn selected" data-option="sugar" data-value="normal">Gula Normal</button>
+                    <button type="button" class="modal-btn" data-option="sugar" data-value="no">Tanpa Gula</button>
                 </div>
             </div>
         </div>
@@ -588,22 +599,74 @@ document.addEventListener('DOMContentLoaded', function() {
         return item ? (item.qty || 0) : 0;
     }
 
-    function setQtyForProduct(id, name, price, image, qty, notes = '') {
-        let cart = getCart();
-        let existing = cart.find(i => i.id == id);
-
-        if (!existing && qty > 0) {
-            cart.push({ id: id, name: name, price: sanitizePrice(price), image: image, qty: qty, notes: notes });
-        } else if (existing) {
-            existing.qty = qty;
-            existing.notes = notes;
-            if (existing.qty <= 0) {
-                cart = cart.filter(i => i.id != id);
+    async function setQtyForProduct(id, name, price, image, qty, notes = '', ice = 'normal', sugar = 'normal') {
+        try {
+            const response = await fetch('{{ route("cart.add") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                },
+                body: JSON.stringify({ 
+                    id, 
+                    name, 
+                    price, 
+                    image, 
+                    quantity: qty, 
+                    notes, 
+                    ice, 
+                    sugar 
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // Update cart count in header
+                const countEl = document.getElementById('cart-count');
+                if (countEl) countEl.textContent = result.total_items;
+                
+                // Update floating cart bar if exists
+                updateFloatingBarFromServer();
+                
+                return qty;
+            } else {
+                console.error('Failed to add item to cart');
+                return 0;
             }
-        }
+        } catch (err) {
+            console.error('Add to cart error:', err);
+            // Fallback to localStorage for now
+            let cart = getCart();
+            let existing = cart.find(i => i.id == id);
 
-        saveCart(cart);
-        return qty;
+            if (!existing && qty > 0) {
+                cart.push({ id: id, name: name, price: sanitizePrice(price), image: image, qty: qty, notes: notes, ice: ice, sugar: sugar });
+            } else if (existing) {
+                existing.qty = qty;
+                existing.notes = notes;
+                existing.ice = ice;
+                existing.sugar = sugar;
+                if (existing.qty <= 0) {
+                    cart = cart.filter(i => i.id != id);
+                }
+            }
+
+            saveCart(cart);
+            return qty;
+        }
+    }
+
+    async function updateFloatingBarFromServer() {
+        try {
+            const response = await fetch('{{ route("cart.index") }}');
+            const html = await response.text();
+            // We can't easily parse the HTML, so for now just update based on localStorage
+            const cart = getCart();
+            updateFloatingBar(cart);
+        } catch (err) {
+            console.error('Failed to update floating bar from server:', err);
+        }
     }
 
     function renderControl(container, id, name, price, image, qty) {
@@ -616,13 +679,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 </button>
             `;
             const btn = container.querySelector('.qty-circle-btn');
-            btn.addEventListener('click', function () {
+            btn.addEventListener('click', async function () {
                 const card = container.closest('.menu-card');
                 const category = card.getAttribute('data-category');
                 if (category === 'coffee') {
                     openCoffeeModal(id, name, price, image);
                 } else {
-                    const newQty = setQtyForProduct(id, name, price, image, 1);
+                    const newQty = await setQtyForProduct(id, name, price, image, 1);
                     renderControl(container, id, name, price, image, newQty);
                 }
             });
@@ -637,15 +700,15 @@ document.addEventListener('DOMContentLoaded', function() {
             const minus = container.querySelector('.qty-minus');
             const plus = container.querySelector('.qty-plus');
 
-            minus.addEventListener('click', function () {
+            minus.addEventListener('click', async function () {
                 const currentQty = getQtyById(id);
-                const newQty = setQtyForProduct(id, name, price, image, Math.max(0, currentQty - 1));
+                const newQty = await setQtyForProduct(id, name, price, image, Math.max(0, currentQty - 1));
                 renderControl(container, id, name, price, image, newQty);
             });
 
-            plus.addEventListener('click', function () {
+            plus.addEventListener('click', async function () {
                 const currentQty = getQtyById(id);
-                const newQty = setQtyForProduct(id, name, price, image, currentQty + 1);
+                const newQty = await setQtyForProduct(id, name, price, image, currentQty + 1);
                 renderControl(container, id, name, price, image, newQty);
             });
         }
@@ -676,13 +739,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === this) closeCoffeeModal();
     });
 
-    document.getElementById('modal-confirm').addEventListener('click', function() {
+    document.getElementById('modal-confirm').addEventListener('click', async function() {
         if (!currentCoffeeItem) return;
         const modal = document.getElementById('coffee-modal');
         const ice = modal.querySelector('.modal-btn[data-option="ice"].selected').getAttribute('data-value');
         const sugar = modal.querySelector('.modal-btn[data-option="sugar"].selected').getAttribute('data-value');
-        const notes = `Es: ${ice === 'less' ? 'Sedikit' : 'Normal'}, Gula: ${sugar === 'less' ? 'Sedikit' : 'Normal'}`;
-        const newQty = setQtyForProduct(currentCoffeeItem.id, currentCoffeeItem.name, currentCoffeeItem.price, currentCoffeeItem.image, 1, notes);
+        const notes = `Es: ${ice === 'less' ? 'Sedikit' : (ice === 'no' ? 'Tidak Ada' : 'Normal')}, Gula: ${sugar === 'less' ? 'Sedikit' : (sugar === 'no' ? 'Tanpa Gula' : 'Normal')}`;
+        const newQty = await setQtyForProduct(currentCoffeeItem.id, currentCoffeeItem.name, currentCoffeeItem.price, currentCoffeeItem.image, 1, notes, ice, sugar);
         const container = document.querySelector(`.quantity-control[data-id="${currentCoffeeItem.id}"]`);
         if (container) {
             renderControl(container, currentCoffeeItem.id, currentCoffeeItem.name, currentCoffeeItem.price, currentCoffeeItem.image, newQty);

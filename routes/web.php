@@ -15,8 +15,10 @@ Route::get('/menu', function () {
     $menus = Menu::orderBy('id', 'asc')->get();
     return view('menu', compact('menus'));
 })->name('menu');
-Route::get('/cart', [CartController::class, 'index'])->name('cart');
-Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.update');
+Route::post('/cart/update-customization', [CartController::class, 'updateCustomization'])->name('cart.updateCustomization');
 Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
 Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');

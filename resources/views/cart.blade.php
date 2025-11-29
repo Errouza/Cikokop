@@ -79,6 +79,23 @@
         font-size: 0.85rem;
         color: #6b7280;
         margin-bottom: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .edit-customization-btn {
+        background: none;
+        border: none;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    .edit-customization-btn:hover {
+        background-color: #f3f4f6;
+        color: #dca259;
     }
 
     .cart-item-price {
@@ -192,6 +209,7 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
+        text-decoration: none;
     }
     .checkout-btn:hover {
         background-color: #c58c3e;
@@ -224,8 +242,154 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
     }
     .empty-cart-btn:hover {
+        background-color: #c58c3e;
+    }
+
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    @media (min-width: 768px) {
+        .modal-content {
+            width: 80%;
+            max-width: 600px;
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2e2e2e;
+        margin: 0;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.25rem;
+        line-height: 1;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .modal-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-label {
+        font-weight: 600;
+        color: #2e2e2e;
+        margin-bottom: 0.75rem;
+    }
+
+    .modal-btn-group {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .modal-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 12px 20px;
+        border: 2px solid #e5e7eb;
+        background-color: white;
+        color: #2e2e2e;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 500;
+        font-size: 0.95rem;
+        margin: 4px;
+    }
+
+    .modal-btn:hover {
+        border-color: #dca259;
+        background-color: #fef3e2;
+    }
+
+    .modal-btn.selected {
+        border-color: #dca259;
+        background-color: #dca259;
+        color: white;
+    }
+
+    .modal-footer {
+        display: flex;
+        gap: 1rem;
+        padding: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .modal-btn-cancel {
+        flex: 1;
+        padding: 14px 24px;
+        border: 2px solid #e5e7eb;
+        background-color: white;
+        color: #2e2e2e;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .modal-btn-cancel:hover {
+        border-color: #6b7280;
+        background-color: #f3f4f6;
+    }
+
+    .modal-btn-primary {
+        flex: 1;
+        padding: 14px 24px;
+        border: none;
+        background-color: #dca259;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .modal-btn-primary:hover {
         background-color: #c58c3e;
     }
 </style>
@@ -242,16 +406,92 @@
         <h1 class="cart-title">Keranjang Saya</h1>
     </div>
 
-    <div id="cart-content">
-        <!-- JS will populate -->
+    @if(empty($cart))
+        <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <div class="empty-cart-text">Keranjang Kosong</div>
+            <a href="{{ route('menu') }}" class="empty-cart-btn">Kembali ke Menu</a>
+        </div>
+    @else
+        <div class="cart-list">
+            @foreach($cart as $id => $item)
+                <div class="cart-item" data-id="{{ $id }}">
+                    <img src="{{ $item['image'] ?? asset('image/default-product.jpg') }}" alt="{{ $item['name'] }}" class="cart-item-img">
+                    <div class="cart-item-details">
+                        <div class="cart-item-name">{{ $item['name'] }}</div>
+                        @if(!empty($item['notes']))
+                            <div class="cart-item-notes">
+                                {{ $item['notes'] }}
+                                <button class="edit-customization-btn" data-id="{{ $id }}" data-ice="{{ $item['ice'] ?? 'normal' }}" data-sugar="{{ $item['sugar'] ?? 'normal' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
+                        <div class="cart-item-price">Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="qty-controller">
+                            <button class="qty-btn" data-action="decrement" data-id="{{ $id }}" data-current-qty="{{ $item['quantity'] ?? 1 }}">−</button>
+                            <span class="qty-count" data-id="{{ $id }}">{{ $item['quantity'] ?? 1 }}</span>
+                            <button class="qty-btn" data-action="increment" data-id="{{ $id }}">+</button>
+                        </div>
+                        <button class="delete-btn" data-id="{{ $id }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @endif
+</div>
+
+<!-- Edit Customization Modal -->
+<div id="editModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Kustomisasi</h3>
+            <button type="button" class="modal-close" onclick="closeEditModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <input type="hidden" id="editItemId" value="">
+            
+            <div class="modal-section">
+                <div class="modal-label">Tingkat Es</div>
+                <div class="modal-btn-group">
+                    <button type="button" class="modal-btn" data-option="ice" data-value="less">Es Sedikit</button>
+                    <button type="button" class="modal-btn selected" data-option="ice" data-value="normal">Es Normal</button>
+                    <button type="button" class="modal-btn" data-option="ice" data-value="no">Tidak Ada Es</button>
+                </div>
+            </div>
+            
+            <div class="modal-section">
+                <div class="modal-label">Tingkat Gula</div>
+                <div class="modal-btn-group">
+                    <button type="button" class="modal-btn" data-option="sugar" data-value="less">Gula Sedikit</button>
+                    <button type="button" class="modal-btn selected" data-option="sugar" data-value="normal">Gula Normal</button>
+                    <button type="button" class="modal-btn" data-option="sugar" data-value="no">Tanpa Gula</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="modal-btn-cancel" onclick="closeEditModal()">Batal</button>
+            <button type="button" class="modal-btn-primary" onclick="saveCustomization()">Simpan Perubahan</button>
+        </div>
     </div>
 </div>
 
-<div class="cart-footer" id="cart-footer" style="display: none;">
+@if(!empty($cart))
+<div class="cart-footer">
     <div class="footer-content">
         <div>
             <div class="total-label">Total Bayar</div>
-            <div class="total-value">Rp <span id="cart-total">0</span></div>
+            <div class="total-value">Rp <span id="cart-total">{{ number_format($total, 0, ',', '.') }}</span></div>
         </div>
         <a href="{{ route('checkout') }}" class="checkout-btn">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -261,82 +501,158 @@
         </a>
     </div>
 </div>
+@endif
 
 @push('scripts')
 <script>
+// Modal functions - defined outside DOMContentLoaded to be accessible to inline handlers
+function openEditModal(id, ice, sugar) {
+    const modal = document.getElementById('editModal');
+    const itemIdInput = document.getElementById('editItemId');
+    
+    // Set the item ID
+    itemIdInput.value = id;
+    
+    // Reset all buttons
+    modal.querySelectorAll('.modal-btn').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+    
+    // Set ice selection
+    const iceBtn = modal.querySelector(`.modal-btn[data-option="ice"][data-value="${ice}"]`);
+    if (iceBtn) iceBtn.classList.add('selected');
+    
+    // Set sugar selection
+    const sugarBtn = modal.querySelector(`.modal-btn[data-option="sugar"][data-value="${sugar}"]`);
+    if (sugarBtn) sugarBtn.classList.add('selected');
+    
+    // Add click handlers for modal buttons
+    modal.querySelectorAll('.modal-btn[data-option]').forEach(btn => {
+        btn.onclick = function() {
+            const option = this.dataset.option;
+            modal.querySelectorAll(`.modal-btn[data-option="${option}"]`).forEach(b => {
+                b.classList.remove('selected');
+            });
+            this.classList.add('selected');
+        };
+    });
+    
+    // Show modal
+    modal.style.display = 'flex';
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editModal');
+    modal.style.display = 'none';
+}
+
+async function saveCustomization() {
+    const modal = document.getElementById('editModal');
+    const id = parseInt(document.getElementById('editItemId').value);
+    
+    // Get selected values
+    const iceBtn = modal.querySelector('.modal-btn[data-option="ice"].selected');
+    const sugarBtn = modal.querySelector('.modal-btn[data-option="sugar"].selected');
+    
+    if (!iceBtn || !sugarBtn) {
+        alert('Silakan pilih tingkat es dan gula');
+        return;
+    }
+    
+    const ice = iceBtn.dataset.value;
+    const sugar = sugarBtn.dataset.value;
+    
+    try {
+        const response = await fetch('{{ route("cart.updateCustomization") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            },
+            body: JSON.stringify({ id, ice, sugar })
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            // Update the notes display
+            const cartItem = document.querySelector(`.cart-item[data-id="${id}"]`);
+            if (cartItem) {
+                const notesElement = cartItem.querySelector('.cart-item-notes');
+                if (notesElement) {
+                    // Update the notes text and button
+                    notesElement.innerHTML = `${result.notes} <button class="edit-customization-btn" data-id="${id}" data-ice="${ice}" data-sugar="${sugar}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                    </button>`;
+                    
+                    // Re-attach event listener to the new button
+                    const newEditBtn = notesElement.querySelector('.edit-customization-btn');
+                    newEditBtn.addEventListener('click', function() {
+                        openEditModal(id, ice, sugar);
+                    });
+                }
+            }
+            
+            // Update cart total
+            const totalEl = document.getElementById('cart-total');
+            if (totalEl) totalEl.textContent = result.cart_total.toLocaleString('id-ID');
+            
+            // Show success message
+            showSuccessToast('Kustomisasi berhasil diperbarui!');
+            
+            // Close modal
+            closeEditModal();
+        } else {
+            alert('Gagal memperbarui kustomisasi');
+        }
+    } catch (err) {
+        console.error('Update customization error:', err);
+        alert('Terjadi kesalahan saat memperbarui kustomisasi');
+    }
+}
+
+function showSuccessToast(message) {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'success-toast';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #10b981;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-weight: 500;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 3000);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     function sanitizePrice(str) {
         if (typeof str === 'number') return str;
         if (typeof str !== 'string') return 0;
         return parseFloat(str.replace(/[^0-9]/g, '')) || 0;
-    }
-
-    function getCart() {
-        if (window.SimpleCart && typeof SimpleCart.getCart === 'function') {
-            return SimpleCart.getCart();
-        }
-        return JSON.parse(localStorage.getItem('cart') || '[]');
-    }
-
-    function renderCart() {
-        const cart = getCart();
-        const contentEl = document.getElementById('cart-content');
-        const footerEl = document.getElementById('cart-footer');
-        const totalEl = document.getElementById('cart-total');
-
-        if (cart.length === 0) {
-            contentEl.innerHTML = `
-                <div class="empty-cart">
-                    <div class="empty-cart-icon">🛒</div>
-                    <div class="empty-cart-text">Keranjang kamu kosong</div>
-                    <button class="empty-cart-btn" onclick="window.location.href='/'">Kembali ke Menu</button>
-                </div>
-            `;
-            footerEl.style.display = 'none';
-            return;
-        }
-
-        let html = '<div class="cart-list">';
-        let total = 0;
-
-        cart.forEach(item => {
-            const price = sanitizePrice(item.price);
-            const qty = item.qty || 0;
-            const itemTotal = price * qty;
-            total += itemTotal;
-            const notes = item.notes ? `<div class="cart-item-notes">${item.notes}</div>` : '';
-
-            html += `
-                <div class="cart-item" data-id="${item.id}">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-img">
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
-                        ${notes}
-                        <div class="cart-item-price">Rp ${price.toLocaleString('id-ID')}</div>
-                    </div>
-                    <div class="cart-item-controls">
-                        <div class="qty-controller">
-                            <button class="qty-btn" data-action="decrement" data-id="${item.id}" data-current-qty="${qty}">−</button>
-                            <span class="qty-count" data-id="${item.id}">${qty}</span>
-                            <button class="qty-btn" data-action="increment" data-id="${item.id}">+</button>
-                        </div>
-                        <button class="delete-btn" data-id="${item.id}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            `;
-        });
-
-        html += '</div>';
-        contentEl.innerHTML = html;
-        totalEl.textContent = total.toLocaleString('id-ID');
-        footerEl.style.display = 'block';
-
-        // Attach event listeners after rendering
-        attachCartEvents();
     }
 
     // Attach event listeners to quantity controls
@@ -377,11 +693,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 await removeItem(id);
             });
         });
+
+        // Edit customization buttons
+        document.querySelectorAll('.edit-customization-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const id = parseInt(this.dataset.id);
+                const ice = this.dataset.ice || 'normal';
+                const sugar = this.dataset.sugar || 'normal';
+                openEditModal(id, ice, sugar);
+            });
+        });
     }
 
     async function updateQuantity(id, delta) {
         try {
-            const response = await fetch('{{ route("cart.updateQuantity") }}', {
+            const response = await fetch('{{ route("cart.update") }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -402,10 +728,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update cart total
                 const totalEl = document.getElementById('cart-total');
                 if (totalEl) totalEl.textContent = result.cart_total.toLocaleString('id-ID');
-                
-                // Update floating cart bar if exists
-                const floatingTotal = document.getElementById('floating-total-price');
-                if (floatingTotal) floatingTotal.textContent = result.cart_total.toLocaleString('id-ID');
                 
                 // If removed, hide footer if cart is empty
                 if (result.removed) {
@@ -436,10 +758,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 const totalEl = document.getElementById('cart-total');
                 if (totalEl) totalEl.textContent = result.cart_total.toLocaleString('id-ID');
                 
-                // Update floating cart bar if exists
-                const floatingTotal = document.getElementById('floating-total-price');
-                if (floatingTotal) floatingTotal.textContent = result.cart_total.toLocaleString('id-ID');
-                
                 // Check if cart is empty
                 const remainingItems = document.querySelectorAll('.cart-item');
                 if (remainingItems.length === 0) {
@@ -452,7 +770,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Initial render
-    renderCart();
+    attachCartEvents();
 });
 </script>
 @endpush
