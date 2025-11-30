@@ -197,6 +197,15 @@
                         </div>
 
                         <div class="mb-4">
+                            <label class="checkout-label" for="tipe_pengambilan">Tipe Pengambilan</label>
+                            <select name="tipe_pengambilan" id="tipe_pengambilan" class="checkout-select" required>
+                                <option value="dine-in">Makan di Tempat (Dine In)</option>
+                                <option value="takeaway">Bawa Pulang (Takeaway)</option>
+                                <option value="delivery">Pengiriman (Delivery)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
                             <label class="checkout-label">Metode Pembayaran</label>
                             <div class="space-y-2">
                                 <label class="flex items-center">
@@ -214,17 +223,29 @@
                     <div>
                         <h3 class="summary-title">Ringkasan Pesanan</h3>
                         <div id="order-summary" class="space-y-2 text-sm">
-                            <!-- JS will populate -->
+                            @foreach($cart as $item)
+                                <div class="flex justify-between items-center">
+                                    <div>
+                                        <div class="font-medium">{{ $item['name'] }} 
+                                            @if(!empty($item['notes']))
+                                                <small class="text-gray-500">({{ $item['notes'] }})</small>
+                                            @endif
+                                        </div>
+                                        <div class="text-sm text-gray-500">{{ $item['quantity'] }} x Rp {{ number_format($item['price'], 0, ',', '.') }}</div>
+                                    </div>
+                                    <div class="font-medium">Rp {{ number_format($item['price'] * $item['quantity'], 0, ',', '.') }}</div>
+                                </div>
+                            @endforeach
                         </div>
                         <div class="summary-total-wrapper">
                             <span class="summary-total-label">Total Bayar</span>
-                            <span class="summary-total-value">Rp <span id="checkout-total">0</span></span>
+                            <span class="summary-total-value">Rp <span id="checkout-total">{{ number_format($total, 0, ',', '.') }}</span></span>
                         </div>
                     </div>
                 </div>
 
-                <input type="hidden" name="items" id="items-input">
-                <input type="hidden" name="total_harga" id="total-input">
+                <input type="hidden" name="items" id="items-input" value="{{ json_encode($cart) }}">
+                <input type="hidden" name="total_harga" id="total-input" value="{{ $total }}">
 
                 <div class="mt-6 flex justify-end">
                     <button type="submit" class="btn-pay">Bayar Sekarang</button>
@@ -256,41 +277,6 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    function sanitizePrice(str) {
-        if (typeof str === 'number') return str;
-        if (typeof str !== 'string') return 0;
-        return parseFloat(str.replace(/[^0-9]/g, '')) || 0;
-    }
-
-    function getCart() {
-        return JSON.parse(localStorage.getItem('cart') || '[]');
-    }
-
-    function renderSummary() {
-        const cart = getCart();
-        const summaryEl = document.getElementById('order-summary');
-        const totalEl = document.getElementById('checkout-total');
-        summaryEl.innerHTML = '';
-        let total = 0;
-        cart.forEach(item => {
-            const price = sanitizePrice(item.price);
-            const qty = item.qty || 0;
-            const itemTotal = price * qty;
-            total += itemTotal;
-            const notes = item.notes ? `<small class="text-gray-500">(${item.notes})</small>` : '';
-            summaryEl.innerHTML += `
-                <div class="flex justify-between items-center">
-                    <div>
-                        <div class="font-medium">${item.name} ${notes}</div>
-                        <div class="text-sm text-gray-500">${qty} x Rp ${price.toLocaleString('id-ID')}</div>
-                    </div>
-                    <div class="font-medium">Rp ${itemTotal.toLocaleString('id-ID')}</div>
-                </div>
-            `;
-        });
-        totalEl.textContent = total.toLocaleString('id-ID');
-    }
-
     function showPaymentView(method) {
         document.querySelectorAll('.payment-view').forEach(v => v.classList.remove('active'));
         if (method === 'qris') {
@@ -302,11 +288,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('checkout-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-        showPaymentView(paymentMethod);
+        
+        // Submit form via fetch to store order first
+        const formData = new FormData(this);
+        
+        fetch('{{ route("orders.store") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                // If it returns JSON (e.g. validation error), handle it
+                return response.json().then(data => {
+                    // Fallback if not redirected
+                    const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                    showPaymentView(paymentMethod);
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Fallback for demo purposes if backend fails
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            showPaymentView(paymentMethod);
+        });
     });
-
-    renderSummary();
 });
 </script>
 @endpush

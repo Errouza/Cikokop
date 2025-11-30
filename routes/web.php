@@ -61,6 +61,8 @@ Route::post('/admin/menus', [MenuController::class, 'store'])->name('admin.menu.
 // Admin listings
 Route::get('/admin/menus', [MenuController::class, 'index'])->name('admin.menu.index');
 Route::get('/admin/orders', [OrderController::class, 'adminIndex'])->name('admin.orders.index');
+Route::post('/admin/orders/{order}/complete', [OrderController::class, 'complete'])->name('admin.orders.complete');
+Route::post('/admin/orders/{order}/confirm-payment', [OrderController::class, 'adminConfirmPayment'])->name('admin.orders.confirmPayment');
 // Menu CRUD
 Route::get('/admin/menus/{menu}/edit', [MenuController::class, 'edit'])->name('admin.menu.edit');
 Route::match(['put','patch'], '/admin/menus/{menu}', [MenuController::class, 'update'])->name('admin.menu.update');

@@ -648,7 +648,7 @@
     <div class="footer-content">
         <div>
             <div class="total-label">Total Bayar</div>
-            <div class="total-value">Rp <span id="cart-total">{{ number_format($total, 0, ',', '.') }}</span></div>
+            <div class="total-value">Rp <span id="cart-total">{{ number_format($total) }}</span></div>
         </div>
         <a href="{{ route('checkout') }}" class="checkout-btn">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

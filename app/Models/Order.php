@@ -16,6 +16,7 @@ class Order extends Model
         'nama_pelanggan',
         'telepon_pelanggan',
         'tipe_pengambilan',
+        'payment_method',
         'total_harga',
         'status',
         'items',

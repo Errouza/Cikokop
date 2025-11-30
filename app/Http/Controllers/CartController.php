@@ -307,8 +307,15 @@ class CartController extends Controller
         // 4. Calculate Total with sanitized prices
         $total = 0;
         foreach($cart as $rowId => $details) {
-            $sanitizedPrice = $this->sanitizePrice(isset($details['price']) ? $details['price'] : 0);
+            $price = isset($details['price']) ? $details['price'] : 0;
+            $sanitizedPrice = $this->sanitizePrice($price);
             $quantity = (int)(isset($details['quantity']) ? $details['quantity'] : 0);
+            
+            // Fallback: if sanitized price is 0 but original price is numeric and > 0, use original
+            if ($sanitizedPrice == 0 && is_numeric($price) && $price > 0) {
+                $sanitizedPrice = (float)$price;
+            }
+            
             $itemTotal = $sanitizedPrice * $quantity;
             $total += $itemTotal;
             
@@ -353,6 +360,11 @@ class CartController extends Controller
     
     private function sanitizePrice($price)
     {
+        // If it's already numeric, return it directly
+        if (is_numeric($price)) {
+            return (float)$price;
+        }
+
         // Handle null/empty values
         if (empty($price)) {
             return 0;
