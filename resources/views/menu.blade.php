@@ -4,401 +4,17 @@
 
 @push('styles')
 <style>
-    :root {
-        --primary: #dca259;
-        --primary-dark: #c58c3e;
-        --text: #2e2e2e;
-        --bg: #f7f7f7;
-        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        --shadow-hover: 0 15px 30px rgba(0, 0, 0, 0.15);
-        --added-bg: #A67B3D;
-    }
-
-    .hero-banner {
-        height: 280px;
-        border-radius: 20px;
-        overflow: hidden;
-        margin-bottom: 2.5rem;
-        box-shadow: 0 12px 28px rgba(0,0,0,0.12);
-    }
-    .hero-banner img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
-
-    .menu-grid {
-        display: grid;
-        gap: 16px;
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (min-width: 768px) {
-        .menu-grid {
-            gap: 20px;
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-
-    @media (min-width: 1024px) {
-        .menu-grid {
-            gap: 24px;
-            grid-template-columns: repeat(4, 1fr);
-        }
-    }
-
-    .category-section { margin-bottom: 2.5rem; }
-    .section-title {
-        font-size: 1rem;
-        font-weight: 700;
-        letter-spacing: 0.18em;
-        color: #9CA3AF;
-        margin-bottom: 0.75rem;
-    }
-
-    .menu-card {
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: var(--shadow);
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-    .menu-card:hover {
-        transform: translateY(-10px);
-        box-shadow: var(--shadow-hover);
-    }
-
-    .card-img-container {
-        width: 100%;
-        height: 250px;
-        overflow: hidden;
-        border-radius: 16px 16px 0 0;
-        background-color: #eee;
-    }
-    .card-img-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-    .menu-card:hover .card-img-container img { transform: scale(1.1); }
-
-    .card-content {
-        padding: 1.25rem;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
-    .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 0.5rem;
-    }
-    .menu-name {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: var(--text);
-        margin: 0;
-    }
-    .menu-category {
-        background-color: #f3f4f6;
-        color: #4b5563;
-        font-size: 0.75rem;
-        font-weight: 500;
-        padding: 0.25rem 0.5rem;
-        border-radius: 9999px;
-        text-transform: capitalize;
-    }
-    .menu-description {
-        color: #6b7280;
-        font-size: 0.875rem;
-        margin-bottom: 1rem;
-        flex-grow: 1;
-    }
-    .card-footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: auto;
-    }
-    .menu-price {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--text);
-    }
-
-    .quantity-control {
-        display: flex;
-        justify-content: flex-end;
-        align-items: center;
-        min-width: 120px;
-    }
-    .qty-circle-btn {
-        background-color: var(--primary);
-        color: #ffffff;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .qty-circle-btn:hover {
-        background-color: var(--primary-dark);
-        transform: scale(1.1);
-    }
-    .qty-circle-btn:active { transform: scale(0.95); }
-
-    .qty-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        background-color: var(--added-bg);
-        color: #ffffff;
-        border-radius: 9999px;
-        padding: 0.35rem 0.75rem;
-        min-width: 100px;
-        justify-content: space-between;
-        transition: all 0.25s ease;
-    }
-    .qty-btn {
-        width: 24px;
-        height: 24px;
-        border-radius: 9999px;
-        border: none;
-        background-color: rgba(255,255,255,0.15);
-        color: #ffffff;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-weight: 700;
-        line-height: 1;
-        transition: background-color 0.2s ease, transform 0.2s ease;
-    }
-    .qty-btn:hover {
-        background-color: rgba(255,255,255,0.3);
-        transform: translateY(-1px);
-    }
-    .qty-count {
-        min-width: 20px;
-        text-align: center;
-        font-weight: 600;
-    }
-
-    .page-header {
-        text-align: center;
-        margin-bottom: 2rem;
-        padding: 0 1rem;
-    }
-    .page-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--text);
-        margin-bottom: 0.5rem;
-    }
-    .cart-button {
-        background-color: #2e2e2e;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 9999px;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.75rem;
-        text-decoration: none;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        margin-top: 1rem;
-    }
-    .cart-button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    .cart-count {
-        background-color: white;
-        color: var(--text);
-        border-radius: 9999px;
-        width: 1.5rem;
-        height: 1.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
-    /* Floating Cart Bar - Match Cart Footer Style */
-    .floating-cart-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #ffffff;
-        border-top: 1px solid #e5e7eb;
-        padding: 1rem 1.5rem;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-        z-index: 50;
-        display: none;
-        align-items: center;
-        justify-content: space-between;
-        transition: transform 0.3s ease;
-    }
-    .floating-cart-bar.show { display: flex; }
-    .floating-cart-info {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #2e2e2e;
-    }
-    .floating-cart-info strong {
-        color: #dca259;
-        font-size: 1.3rem;
-    }
-    .floating-cart-btn {
-        background-color: #dca259;
-        color: #ffffff;
-        border: none;
-        border-radius: 9999px;
-        padding: 0.75rem 1.5rem;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        white-space: nowrap;
-    }
-    .floating-cart-btn:hover {
-        background-color: #c58c3e;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
-    .floating-cart-btn:active {
-        transform: scale(0.97);
-    }
-
-    /* Coffee Customization Modal */
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0,0,0,0.5);
-        z-index: 60;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-    }
-    .modal-overlay.show { display: flex; }
-    .modal-content {
-        background-color: #ffffff;
-        border-radius: 16px;
-        padding: 2rem;
-        max-width: 600px;
-        width: 90%;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-    }
-
-    @media (min-width: 768px) {
-        .modal-content {
-            width: 80%;
-            max-width: 600px;
-        }
-    }
-    .modal-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--text);
-        margin-bottom: 1rem;
-    }
-    .modal-options {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        margin-bottom: 1.5rem;
-    }
-    .modal-option-group {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    .modal-label {
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: var(--text);
-    }
-    .modal-buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-    .modal-btn {
-        flex: 1;
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-weight: 500;
-        font-size: 0.95rem;
-        cursor: pointer;
-        border: 2px solid #e5e7eb;
-        background-color: #ffffff;
-        transition: all 0.2s ease;
-        margin: 4px;
-    }
-    .modal-btn.selected {
-        background-color: var(--primary);
-        color: #ffffff;
-        border-color: var(--primary);
-    }
-    .modal-actions {
-        display: flex;
-        gap: 0.75rem;
-        margin-top: 1.5rem;
-    }
-    .modal-btn-primary {
-        flex: 1;
-        background-color: var(--primary);
-        color: #ffffff;
-        border: none;
-        border-radius: 8px;
-        padding: 14px 24px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .modal-btn-primary:hover {
-        background-color: var(--primary-dark);
-        transform: translateY(-1px);
-    }
-    .modal-btn-secondary {
-        flex: 1;
-        background-color: transparent;
-        color: var(--text);
-        border: 2px solid var(--text);
-        border-radius: 8px;
-        padding: 14px 24px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-    .modal-btn-secondary:hover {
-        background-color: #f3f4f6;
-    }
+    /* Custom colors for arbitrary values if needed, though we try to use Tailwind classes */
+    .bg-added { background-color: #A67B3D; }
 </style>
 @endpush
 
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <!-- Hero Banner at top -->
-    <div class="hero-banner">
-        <img src="{{ asset('image/banner.png') }}" alt="Cikop Banner">
+    <!-- Hero Banner at top -->
+    <div class="h-[280px] rounded-[20px] overflow-hidden mb-10 shadow-lg">
+        <img src="{{ asset('image/banner.png') }}" alt="Cikop Banner" class="w-full h-full object-cover block">
     </div>
 
     @php
@@ -408,23 +24,23 @@
     @endphp
 
     @if($coffeeMenus->count())
-    <section class="category-section">
-        <h2 class="section-title">COFFEE</h2>
-        <div class="menu-grid">
+    <section class="mb-10">
+        <h2 class="text-base font-bold tracking-[0.18em] text-gray-400 mb-3">COFFEE</h2>
+        <div class="grid gap-4 grid-cols-2 md:gap-5 md:grid-cols-3 lg:gap-6 lg:grid-cols-4">
             @foreach($coffeeMenus as $menu)
-                <div class="menu-card" data-id="{{ $menu->id }}" data-category="coffee">
-                    <div class="card-img-container">
-                        <img src="{{ asset($menu->gambar_url) }}" alt="{{ $menu->nama }}" loading="lazy">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl flex flex-col h-full" data-id="{{ $menu->id }}" data-category="coffee">
+                    <div class="w-full h-[250px] overflow-hidden rounded-t-2xl bg-gray-200 group">
+                        <img src="{{ asset($menu->gambar_url) }}" alt="{{ $menu->nama }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="menu-name">{{ $menu->nama }}</h3>
-                            <span class="menu-category">Coffee</span>
+                    <div class="p-5 flex-grow flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800 m-0">{{ $menu->nama }}</h3>
+                            <span class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full capitalize">Coffee</span>
                         </div>
-                        <p class="menu-description">{{ $menu->deskripsi }}</p>
-                        <div class="card-footer">
-                            <span class="menu-price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
-                            <div class="quantity-control"
+                        <p class="text-gray-500 text-sm mb-4 flex-grow">{{ $menu->deskripsi }}</p>
+                        <div class="flex justify-between items-center mt-auto">
+                            <span class="text-xl font-bold text-gray-800">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
+                            <div class="quantity-control flex justify-end items-center min-w-[120px]"
                                  data-id="{{ $menu->id }}"
                                  data-name="{{ $menu->nama }}"
                                  data-price="{{ $menu->harga }}"
@@ -439,23 +55,23 @@
     @endif
 
     @if($matchaMenus->count())
-    <section class="category-section">
-        <h2 class="section-title">MATCHA</h2>
-        <div class="menu-grid">
+    <section class="mb-10">
+        <h2 class="text-base font-bold tracking-[0.18em] text-gray-400 mb-3">MATCHA</h2>
+        <div class="grid gap-4 grid-cols-2 md:gap-5 md:grid-cols-3 lg:gap-6 lg:grid-cols-4">
             @foreach($matchaMenus as $menu)
-                <div class="menu-card" data-id="{{ $menu->id }}" data-category="matcha">
-                    <div class="card-img-container">
-                        <img src="{{ asset($menu->gambar_url) }}" alt="{{ $menu->nama }}" loading="lazy">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl flex flex-col h-full" data-id="{{ $menu->id }}" data-category="matcha">
+                    <div class="w-full h-[250px] overflow-hidden rounded-t-2xl bg-gray-200 group">
+                        <img src="{{ asset($menu->gambar_url) }}" alt="{{ $menu->nama }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="menu-name">{{ $menu->nama }}</h3>
-                            <span class="menu-category">Matcha</span>
+                    <div class="p-5 flex-grow flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800 m-0">{{ $menu->nama }}</h3>
+                            <span class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full capitalize">Matcha</span>
                         </div>
-                        <p class="menu-description">{{ $menu->deskripsi }}</p>
-                        <div class="card-footer">
-                            <span class="menu-price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
-                            <div class="quantity-control"
+                        <p class="text-gray-500 text-sm mb-4 flex-grow">{{ $menu->deskripsi }}</p>
+                        <div class="flex justify-between items-center mt-auto">
+                            <span class="text-xl font-bold text-gray-800">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
+                            <div class="quantity-control flex justify-end items-center min-w-[120px]"
                                  data-id="{{ $menu->id }}"
                                  data-name="{{ $menu->nama }}"
                                  data-price="{{ $menu->harga }}"
@@ -470,23 +86,23 @@
     @endif
 
     @if($riceMenus->count())
-    <section class="category-section">
-        <h2 class="section-title">RICEBOWL</h2>
-        <div class="menu-grid">
+    <section class="mb-10">
+        <h2 class="text-base font-bold tracking-[0.18em] text-gray-400 mb-3">RICEBOWL</h2>
+        <div class="grid gap-4 grid-cols-2 md:gap-5 md:grid-cols-3 lg:gap-6 lg:grid-cols-4">
             @foreach($riceMenus as $menu)
-                <div class="menu-card" data-id="{{ $menu->id }}" data-category="ricebowl">
-                    <div class="card-img-container">
-                        <img src="{{ asset($menu->gambar_url) }}" alt="{{ $menu->nama }}" loading="lazy">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl flex flex-col h-full" data-id="{{ $menu->id }}" data-category="ricebowl">
+                    <div class="w-full h-[250px] overflow-hidden rounded-t-2xl bg-gray-200 group">
+                        <img src="{{ asset($menu->gambar_url) }}" alt="{{ $menu->nama }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h3 class="menu-name">{{ $menu->nama }}</h3>
-                            <span class="menu-category">Ricebowl</span>
+                    <div class="p-5 flex-grow flex flex-col">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-semibold text-gray-800 m-0">{{ $menu->nama }}</h3>
+                            <span class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full capitalize">Ricebowl</span>
                         </div>
-                        <p class="menu-description">{{ $menu->deskripsi }}</p>
-                        <div class="card-footer">
-                            <span class="menu-price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
-                            <div class="quantity-control"
+                        <p class="text-gray-500 text-sm mb-4 flex-grow">{{ $menu->deskripsi }}</p>
+                        <div class="flex justify-between items-center mt-auto">
+                            <span class="text-xl font-bold text-gray-800">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
+                            <div class="quantity-control flex justify-end items-center min-w-[120px]"
                                  data-id="{{ $menu->id }}"
                                  data-name="{{ $menu->nama }}"
                                  data-price="{{ $menu->harga }}"
@@ -502,17 +118,18 @@
 </div>
 
 <!-- Floating Cart Bar - Footer Style -->
-<div class="floating-cart-bar" id="floating-cart-bar">
+<!-- Floating Cart Bar - Footer Style -->
+<div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 px-6 py-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 hidden items-center justify-between transition-transform duration-300" id="floating-cart-bar">
     <div class="container mx-auto flex justify-end items-center gap-5">
-        <div class="floating-cart-info flex flex-row items-center gap-2">
+        <div class="flex flex-row items-center gap-2 text-lg font-bold text-gray-800">
             <span id="footer-qty">0 Item</span>
             <span>•</span>
             <div class="flex flex-row items-center gap-1">
                 <span>Total Bayar:</span>
-                <strong>Rp <span id="floating-total-price">{{ number_format($total ?? 0, 0, ',', '.') }}</span></strong>
+                <strong class="text-primary text-xl">Rp <span id="floating-total-price">{{ number_format($total ?? 0, 0, ',', '.') }}</span></strong>
             </div>
         </div>
-        <a href="{{ route('cart.index') }}" class="floating-cart-btn">
+        <a href="{{ route('cart.index') }}" class="bg-primary text-white border-none rounded-full px-6 py-3 font-semibold text-base cursor-pointer transition-all duration-300 inline-flex items-center gap-2 whitespace-nowrap hover:bg-primary-dark hover:-translate-y-px hover:shadow-md active:scale-95">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
             </svg>
@@ -522,29 +139,30 @@
 </div>
 
 <!-- Coffee Customization Modal -->
-<div class="modal-overlay" id="coffee-modal">
-    <div class="modal-content">
-        <h3 class="modal-title">Kustomisasi Kopi</h3>
-        <div class="modal-options">
-            <div class="modal-option-group">
-                <div class="modal-label">Tingkat Es</div>
-                <div class="modal-buttons">
-                    <button type="button" class="modal-btn" data-option="ice" data-value="less">Es Sedikit</button>
-                    <button type="button" class="modal-btn selected" data-option="ice" data-value="normal">Es Normal</button>
+<!-- Coffee Customization Modal -->
+<div class="fixed inset-0 bg-black/50 z-[60] hidden items-center justify-center p-4" id="coffee-modal">
+    <div class="bg-white rounded-2xl p-8 w-[90%] max-w-[600px] shadow-2xl md:w-[80%]">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 modal-title">Kustomisasi Kopi</h3>
+        <div class="flex flex-col gap-3 mb-6">
+            <div class="flex flex-col gap-2">
+                <div class="font-semibold text-sm text-gray-800">Tingkat Es</div>
+                <div class="flex gap-2">
+                    <button type="button" class="flex-1 py-3 px-5 rounded-lg font-medium text-sm cursor-pointer border-2 border-gray-200 bg-white transition-all duration-200 modal-btn hover:bg-gray-50" data-option="ice" data-value="less">Es Sedikit</button>
+                    <button type="button" class="flex-1 py-3 px-5 rounded-lg font-medium text-sm cursor-pointer border-2 border-primary bg-primary text-white transition-all duration-200 modal-btn selected" data-option="ice" data-value="normal">Es Normal</button>
                 </div>
             </div>
-            <div class="modal-option-group">
-                <div class="modal-label">Tingkat Gula</div>
-                <div class="modal-buttons">
-                    <button type="button" class="modal-btn" data-option="sugar" data-value="less">Gula Sedikit</button>
-                    <button type="button" class="modal-btn selected" data-option="sugar" data-value="normal">Gula Normal</button>
-                    <button type="button" class="modal-btn" data-option="sugar" data-value="no">Tanpa Gula</button>
+            <div class="flex flex-col gap-2">
+                <div class="font-semibold text-sm text-gray-800">Tingkat Gula</div>
+                <div class="flex gap-2">
+                    <button type="button" class="flex-1 py-3 px-5 rounded-lg font-medium text-sm cursor-pointer border-2 border-gray-200 bg-white transition-all duration-200 modal-btn hover:bg-gray-50" data-option="sugar" data-value="less">Gula Sedikit</button>
+                    <button type="button" class="flex-1 py-3 px-5 rounded-lg font-medium text-sm cursor-pointer border-2 border-primary bg-primary text-white transition-all duration-200 modal-btn selected" data-option="sugar" data-value="normal">Gula Normal</button>
+                    <button type="button" class="flex-1 py-3 px-5 rounded-lg font-medium text-sm cursor-pointer border-2 border-gray-200 bg-white transition-all duration-200 modal-btn hover:bg-gray-50" data-option="sugar" data-value="no">Tanpa Gula</button>
                 </div>
             </div>
         </div>
-        <div class="modal-actions">
-            <button type="button" class="modal-btn-secondary" id="modal-cancel">Batal</button>
-            <button type="button" class="modal-btn-primary" id="modal-confirm">Simpan & Tambah</button>
+        <div class="flex gap-3 mt-6">
+            <button type="button" class="flex-1 bg-transparent text-gray-800 border-2 border-gray-800 rounded-lg py-3.5 px-6 font-semibold text-base cursor-pointer transition-all duration-300 hover:bg-gray-100" id="modal-cancel">Batal</button>
+            <button type="button" class="flex-1 bg-primary text-white border-none rounded-lg py-3.5 px-6 font-semibold text-base cursor-pointer transition-all duration-300 hover:bg-primary-dark hover:-translate-y-px" id="modal-confirm">Simpan & Tambah</button>
         </div>
     </div>
 </div>
@@ -799,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderControl(container, id, name, price, image, qty) {
         if (qty <= 0) {
             container.innerHTML = `
-                <button class="qty-circle-btn" type="button" aria-label="Tambah ke keranjang">
+                <button class="bg-primary text-white border-none w-10 h-10 rounded-full cursor-pointer inline-flex items-center justify-center transition-all duration-300 hover:bg-primary-dark hover:scale-110 active:scale-95 qty-circle-btn" type="button" aria-label="Tambah ke keranjang">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
                     </svg>
@@ -807,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             const btn = container.querySelector('.qty-circle-btn');
             btn.addEventListener('click', async function () {
-                const card = container.closest('.menu-card');
+                const card = container.closest('[data-category]');
                 const category = card.getAttribute('data-category');
                 if (category === 'coffee' || category === 'matcha') {
                     openCoffeeModal(id, name, price, image, category);
@@ -818,10 +436,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         } else {
             container.innerHTML = `
-                <div class="qty-pill">
-                    <button type="button" class="qty-btn qty-minus" aria-label="Kurangi">&minus;</button>
-                    <span class="qty-count">${qty}</span>
-                    <button type="button" class="qty-btn qty-plus" aria-label="Tambah">+</button>
+                <div class="inline-flex items-center gap-3 bg-added text-white rounded-full px-3 py-1.5 min-w-[100px] justify-between transition-all duration-250 qty-pill">
+                    <button type="button" class="w-6 h-6 rounded-full border-none bg-white/15 text-white inline-flex items-center justify-center cursor-pointer font-bold leading-none transition-all duration-200 hover:bg-white/30 hover:-translate-y-px qty-btn qty-minus" aria-label="Kurangi">&minus;</button>
+                    <span class="min-w-[20px] text-center font-semibold qty-count">${qty}</span>
+                    <button type="button" class="w-6 h-6 rounded-full border-none bg-white/15 text-white inline-flex items-center justify-center cursor-pointer font-bold leading-none transition-all duration-200 hover:bg-white/30 hover:-translate-y-px qty-btn qty-plus" aria-label="Tambah">+</button>
                 </div>
             `;
             const minus = container.querySelector('.qty-minus');
@@ -833,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const currentQty = parseInt(currentQtyEl.textContent) || 0;
                 const newQty = Math.max(0, currentQty - 1);
                 
-                const card = container.closest('.menu-card');
+                const card = container.closest('[data-category]');
                 const category = card.getAttribute('data-category');
                 
                 if (newQty <= 0) {
@@ -853,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const currentQty = parseInt(currentQtyEl.textContent) || 0;
                 const newQty = currentQty + 1;
                 
-                const card = container.closest('.menu-card');
+                const card = container.closest('[data-category]');
                 const category = card.getAttribute('data-category');
                 
                 const updatedQty = await setQtyForProduct(id, name, price, image, newQty, '', 'normal', 'normal', category);
@@ -873,8 +491,14 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.querySelector('.modal-title').textContent = title;
         modal.classList.add('show');
         // Reset selections
-        modal.querySelectorAll('.modal-btn.selected').forEach(btn => btn.classList.remove('selected'));
-        modal.querySelectorAll('.modal-btn[data-value="normal"]').forEach(btn => btn.classList.add('selected'));
+        modal.querySelectorAll('.modal-btn.selected').forEach(btn => {
+            btn.classList.remove('selected', 'bg-primary', 'text-white', 'border-primary');
+            btn.classList.add('bg-white', 'border-gray-200');
+        });
+        modal.querySelectorAll('.modal-btn[data-value="normal"]').forEach(btn => {
+            btn.classList.add('selected', 'bg-primary', 'text-white', 'border-primary');
+            btn.classList.remove('bg-white', 'border-gray-200');
+        });
     }
 
     function closeCoffeeModal() {
@@ -906,8 +530,14 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.modal-btn[data-option]').forEach(btn => {
         btn.addEventListener('click', function() {
             const option = this.getAttribute('data-option');
-            document.querySelectorAll(`.modal-btn[data-option="${option}"]`).forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll(`.modal-btn[data-option="${option}"]`).forEach(b => {
+                b.classList.remove('selected');
+                b.classList.remove('bg-primary', 'text-white', 'border-primary');
+                b.classList.add('bg-white', 'border-gray-200');
+            });
             this.classList.add('selected');
+            this.classList.remove('bg-white', 'border-gray-200');
+            this.classList.add('bg-primary', 'text-white', 'border-primary');
         });
     });
 

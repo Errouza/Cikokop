@@ -8,51 +8,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f7f7f7;
-            color: #2e2e2e;
-        }
-        .nav-link {
-            transition: all 0.3s ease;
-            border-radius: 6px;
-        }
-        .nav-link:hover {
-            transform: translateY(-2px);
-            background-color: rgba(220, 162, 89, 0.1);
-        }
-        .btn-primary {
-            background-color: #dca259;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 162, 89, 0.2);
-        }
-        .logo {
-            height: 40px;
-            transition: transform 0.3s ease;
-        }
-        .logo:hover {
-            transform: scale(1.05);
-        }
+        /* Custom colors that might be reused */
+        .text-primary { color: #dca259; }
+        .bg-primary { background-color: #dca259; }
+        .bg-primary-dark { background-color: #c58c3e; }
+        .hover\:bg-primary-dark:hover { background-color: #c58c3e; }
+        .border-primary { border-color: #dca259; }
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="font-sans bg-gray-100 text-gray-800 antialiased">
     <div class="min-h-screen flex flex-col">
         <header class="bg-white shadow-sm sticky top-0 z-10">
             <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-                <a href="/" class="flex items-center space-x-3">
-                    <img src="{{ asset('image/LogoCikopVersion2.svg') }}" alt="Cikop Logo" class="logo">
+                <a href="/" class="flex items-center space-x-3 group">
+                    <img src="{{ asset('image/LogoCikopVersion2.svg') }}" alt="Cikop Logo" class="h-10 transition-transform duration-300 group-hover:scale-105">
                 </a>
                 <nav class="flex items-center space-x-4">
-                    <a href="{{ route('magic') }}" class="nav-link px-4 py-2 text-gray-700 font-medium">
+                    <a href="{{ route('magic') }}" class="px-4 py-2 text-gray-700 font-medium rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-yellow-500/10">
                         Magic
                     </a>
-                    <a href="{{ route('menu') }}" class="nav-link px-4 py-2 text-white font-medium rounded-md btn-primary">
+                    <a href="{{ route('menu') }}" class="px-4 py-2 text-white font-medium rounded-md bg-primary transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:bg-primary-dark">
                         Menu
                     </a>
+                    @auth
+                        <a href="{{ route('admin.menu.index') }}" class="px-4 py-2 text-gray-700 font-medium rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-yellow-500/10">
+                            Admin
+                        </a>
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="px-4 py-2 text-gray-700 font-medium rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-yellow-500/10">
+                                Logout
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="px-4 py-2 text-gray-700 font-medium rounded-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-yellow-500/10">
+                            Login Admin
+                        </a>
+                    @endauth
                 </nav>
             </div>
         </header>

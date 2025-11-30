@@ -4,170 +4,29 @@
 
 @push('styles')
 <style>
-    .magic-container {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .magic-card {
-        background-color: #ffffff;
-        border-radius: 16px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        padding: 2rem;
-    }
-
-    .magic-title {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #2e2e2e;
-        margin-bottom: 0.5rem;
-    }
-
-    .magic-subtitle {
-        color: #6b7280;
-        font-size: 0.95rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .magic-label {
-        font-weight: 600;
-        font-size: 0.95rem;
-        margin-bottom: 0.25rem;
-        color: #2e2e2e;
-    }
-
-    .magic-select {
-        width: 100%;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 0.6rem 0.8rem;
-        font-size: 0.95rem;
-        background-color: #ffffff;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .magic-select:focus {
-        outline: none;
-        border-color: #dca259;
-        box-shadow: 0 0 0 3px rgba(220,162,89,0.25);
-    }
-
-    .magic-actions {
-        display: flex;
-        gap: 0.75rem;
-        flex-wrap: wrap;
-    }
-
-    .btn-primary-magic {
-        background-color: #dca259;
-        color: #ffffff;
-        border-radius: 9999px;
-        padding: 0.6rem 1.6rem;
-        font-weight: 500;
-        font-size: 0.95rem;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.4rem;
-    }
-
-    .btn-primary-magic:hover {
-        background-color: #c58c3e;
-        transform: translateY(-1px);
-        box-shadow: 0 8px 18px rgba(0,0,0,0.1);
-    }
-
-    .btn-secondary-magic {
-        background-color: transparent;
-        color: #2e2e2e;
-        border-radius: 9999px;
-        padding: 0.6rem 1.4rem;
-        font-weight: 500;
-        font-size: 0.95rem;
-        border: 1px solid #2e2e2e;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-
-    .btn-secondary-magic:hover {
-        background-color: #f3f4f6;
-    }
-
-    .magic-recommendations {
-        margin-top: 2rem;
-        padding-bottom: 80px; /* Space for floating cart */
-    }
-
-    /* Floating Cart Bar */
-    .floating-cart-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #ffffff;
-        border-top: 1px solid #e5e7eb;
-        padding: 1rem 1.5rem;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-        z-index: 50;
-        display: none;
-        align-items: center;
-        justify-content: space-between;
-        transition: transform 0.3s ease;
-    }
-    .floating-cart-bar.show { display: flex; }
-    .floating-cart-info {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #2e2e2e;
-    }
-    .floating-cart-info strong {
-        color: #dca259;
-        font-size: 1.3rem;
-    }
-    .floating-cart-btn {
-        background-color: #dca259;
-        color: #ffffff;
-        border: none;
-        border-radius: 9999px;
-        padding: 0.75rem 1.5rem;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        white-space: nowrap;
-        text-decoration: none;
-    }
-    .floating-cart-btn:hover {
-        background-color: #c58c3e;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
-    .floating-cart-btn:active {
-        transform: scale(0.97);
-    }
+    /* Custom colors for arbitrary values if needed */
+    .text-primary { color: #dca259; }
+    .bg-primary { background-color: #dca259; }
+    .bg-primary-dark { background-color: #c58c3e; }
+    .border-primary { border-color: #dca259; }
+    .focus\:ring-primary\/25:focus { --tw-ring-color: rgba(220, 162, 89, 0.25); }
 </style>
 @endpush
 
 @section('content')
-<div class="magic-container px-4 py-6">
-    <div class="magic-card">
-        <h2 class="magic-title">Saran Ajaib: Temukan Menu Sesuai Mood</h2>
+<div class="max-w-[900px] mx-auto px-4 py-6">
+    <div class="bg-white rounded-2xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-2">Saran Ajaib: Temukan Menu Sesuai Mood</h2>
 
-        <p class="magic-subtitle">Jawab beberapa pertanyaan singkat, lalu kami akan merekomendasikan menu yang cocok untuk mood Anda.</p>
+        <p class="text-gray-500 text-base mb-6">Jawab beberapa pertanyaan singkat, lalu kami akan merekomendasikan menu yang cocok untuk mood Anda.</p>
 
     {{-- embed menus JSON in a data attribute to avoid inline blade in JS --}}
     <div id="magic-data" data-menus='{{ json_encode($menus) }}' style="display:none;"></div>
 
     <div id="questionnaire" class="space-y-4">
         <div>
-            <label class="magic-label">1) Bagaimana mood Anda sekarang?</label>
-            <select id="mood" class="magic-select">
+            <label class="font-semibold text-sm mb-1 text-gray-800 block">1) Bagaimana mood Anda sekarang?</label>
+            <select id="mood" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-base bg-white transition-all duration-200 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/25">
                 <option value="happy">Bahagia</option>
                 <option value="tired">Lelah</option>
                 <option value="sad">Sedih</option>
@@ -178,8 +37,8 @@
         </div>
 
         <div>
-            <label class="magic-label">2) Anda sedang ingin sesuatu yang...</label>
-            <select id="crave" class="magic-select">
+            <label class="font-semibold text-sm mb-1 text-gray-800 block">2) Anda sedang ingin sesuatu yang...</label>
+            <select id="crave" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-base bg-white transition-all duration-200 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/25">
                 <option value="any">Bebas</option>
                 <option value="sweet">Manis</option>
                 <option value="savory">Gurih</option>
@@ -189,38 +48,39 @@
         </div>
 
         <div>
-            <label class="magic-label">3) Waktu saat ini</label>
-            <select id="timeOfDay" class="magic-select">
+            <label class="font-semibold text-sm mb-1 text-gray-800 block">3) Waktu saat ini</label>
+            <select id="timeOfDay" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-base bg-white transition-all duration-200 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/25">
                 <option value="morning">Pagi</option>
                 <option value="afternoon">Siang</option>
                 <option value="evening">Malam</option>
             </select>
         </div>
 
-        <div class="magic-actions">
-            <button id="recommendBtn" class="btn-primary-magic">Minta Saran</button>
-            <button id="clearBtn" class="btn-secondary-magic">Reset</button>
+        <div class="flex gap-3 flex-wrap">
+            <button id="recommendBtn" class="bg-primary text-white rounded-full px-6 py-2.5 font-medium text-base border-none cursor-pointer transition-all duration-300 inline-flex items-center justify-center gap-2 hover:bg-primary-dark hover:-translate-y-px hover:shadow-md">Minta Saran</button>
+            <button id="clearBtn" class="bg-transparent text-gray-800 rounded-full px-6 py-2.5 font-medium text-base border border-gray-800 cursor-pointer transition-all duration-300 hover:bg-gray-100">Reset</button>
         </div>
     </div>
 
-    <div id="recommendations" class="magic-recommendations">
+    <div id="recommendations" class="mt-8 pb-20">
         <!-- rekomendasi muncul di sini -->
     </div>
     </div>
 </div>
 
 <!-- Floating Cart Bar -->
-<div class="floating-cart-bar" id="floating-cart-bar">
+<!-- Floating Cart Bar -->
+<div class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 px-6 py-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-50 hidden items-center justify-between transition-transform duration-300" id="floating-cart-bar">
     <div class="container mx-auto flex justify-end items-center gap-5">
-        <div class="floating-cart-info flex flex-row items-center gap-2">
+        <div class="flex flex-row items-center gap-2 text-lg font-bold text-gray-800">
             <span id="footer-qty">0 Item</span>
             <span>•</span>
             <div class="flex flex-row items-center gap-1">
                 <span>Total Bayar:</span>
-                <strong>Rp <span id="floating-total-price">0</span></strong>
+                <strong class="text-primary text-xl">Rp <span id="floating-total-price">0</span></strong>
             </div>
         </div>
-        <a href="{{ route('cart.index') }}" class="floating-cart-btn">
+        <a href="{{ route('cart.index') }}" class="bg-primary text-white border-none rounded-full px-6 py-3 font-semibold text-base cursor-pointer transition-all duration-300 inline-flex items-center gap-2 whitespace-nowrap hover:bg-primary-dark hover:-translate-y-px hover:shadow-md active:scale-95">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
             </svg>
@@ -396,14 +256,14 @@
 
     function createCard(it){
         const card = document.createElement('div');
-        card.className = 'bg-white rounded shadow p-3 flex flex-col';
+        card.className = 'bg-white rounded-xl shadow-md p-4 flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-lg';
 
         const imgWrap = document.createElement('div');
-        imgWrap.className = 'h-32 bg-gray-100 mb-2 overflow-hidden';
+        imgWrap.className = 'h-32 bg-gray-100 mb-3 overflow-hidden rounded-lg';
         if(it.gambar_url){
             const img = document.createElement('img');
             img.src = (it.gambar_url && it.gambar_url.startsWith('/')) ? it.gambar_url : it.gambar_url;
-            img.className = 'object-cover w-full h-full';
+            img.className = 'object-cover w-full h-full transition-transform duration-500 hover:scale-110';
             img.alt = it.nama;
             imgWrap.appendChild(img);
         } else {
@@ -411,15 +271,15 @@
         }
 
         const title = document.createElement('div');
-        title.className = 'font-semibold';
+        title.className = 'font-semibold text-gray-800 mb-1';
         title.innerText = it.nama;
 
         const price = document.createElement('div');
-        price.className = 'text-green-700 font-bold mt-1';
+        price.className = 'text-primary font-bold';
         price.innerText = 'Rp ' + Number(it.harga).toLocaleString();
 
         const btn = document.createElement('button');
-        btn.className = 'add-to-cart bg-yellow-500 text-white px-3 py-1 rounded mt-3 transition hover:bg-yellow-600';
+        btn.className = 'add-to-cart w-full bg-primary text-white px-4 py-2 rounded-lg mt-3 font-medium transition-colors hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed';
         btn.innerText = 'Tambah ke Keranjang';
         
         btn.addEventListener('click', async function() {
@@ -431,13 +291,13 @@
             
             if(success) {
                 btn.innerText = 'Berhasil!';
-                btn.classList.remove('bg-yellow-500');
+                btn.classList.remove('bg-primary');
                 btn.classList.add('bg-green-600');
                 setTimeout(() => {
                     btn.innerText = originalText;
                     btn.disabled = false;
                     btn.classList.remove('bg-green-600');
-                    btn.classList.add('bg-yellow-500');
+                    btn.classList.add('bg-primary');
                 }, 1000);
             } else {
                 btn.innerText = 'Gagal';
@@ -497,9 +357,11 @@
         if (footerTotalEl) footerTotalEl.textContent = Number(total).toLocaleString('id-ID');
         
         if (quantity > 0) {
-            floatingBar.classList.add('show');
+            floatingBar.classList.remove('hidden');
+            floatingBar.classList.add('flex');
         } else {
-            floatingBar.classList.remove('show');
+            floatingBar.classList.add('hidden');
+            floatingBar.classList.remove('flex');
         }
     }
 

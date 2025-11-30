@@ -8,26 +8,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f3f4f6;
-            color: #2e2e2e;
-        }
-        .admin-nav-link {
-            transition: all 0.3s ease;
-            border-radius: 6px;
-        }
-        .admin-nav-link:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-        .admin-nav-link.active {
-            background-color: #dca259;
-            color: white;
-        }
+        /* Custom colors that might be reused */
+        .text-primary { color: #dca259; }
+        .bg-primary { background-color: #dca259; }
+        .bg-primary-dark { background-color: #c58c3e; }
+        .hover\:bg-primary-dark:hover { background-color: #c58c3e; }
+        .border-primary { border-color: #dca259; }
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="font-sans bg-gray-100 text-gray-800 antialiased">
     <div class="min-h-screen flex flex-col">
         <header class="bg-white shadow-sm sticky top-0 z-10">
             <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -38,10 +28,10 @@
                     </a>
                     
                     <nav class="hidden md:flex items-center space-x-2">
-                        <a href="{{ route('admin.menu.index') }}" class="admin-nav-link px-4 py-2 font-medium {{ request()->routeIs('admin.menu.*') ? 'active' : 'text-gray-600' }}">
+                        <a href="{{ route('admin.menu.index') }}" class="px-4 py-2 font-medium rounded-md transition-all duration-300 hover:bg-black/5 {{ request()->routeIs('admin.menu.*') ? 'bg-primary text-white hover:bg-primary-dark' : 'text-gray-600' }}">
                             Menu
                         </a>
-                        <a href="{{ route('admin.orders.index') }}" class="admin-nav-link px-4 py-2 font-medium {{ request()->routeIs('admin.orders.*') ? 'active' : 'text-gray-600' }}">
+                        <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 font-medium rounded-md transition-all duration-300 hover:bg-black/5 {{ request()->routeIs('admin.orders.*') ? 'bg-primary text-white hover:bg-primary-dark' : 'text-gray-600' }}">
                             Pesanan
                         </a>
                     </nav>
