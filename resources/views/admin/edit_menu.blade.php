@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Edit Menu (Admin)')
 
@@ -6,9 +6,7 @@
 <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
     <h2 class="text-xl font-bold mb-4">Edit Menu</h2>
 
-    @if(session('success'))
-        <div class="p-3 bg-green-100 text-green-800 mb-4">{{ session('success') }}</div>
-    @endif
+
 
     <form method="post" action="{{ route('admin.menu.update', ['menu' => $menu->id]) }}" enctype="multipart/form-data">
         @csrf

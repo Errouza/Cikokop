@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('title', 'Tambah Menu (Admin)')
 
@@ -6,9 +6,7 @@
 <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
     <h2 class="text-xl font-bold mb-4">Tambah Menu (Admin)</h2>
 
-    @if(session('success'))
-        <div class="p-3 bg-green-100 text-green-800 mb-4">{{ session('success') }}</div>
-    @endif
+
 
     <form method="post" action="{{ route('admin.menu.store') }}" enctype="multipart/form-data">
         @csrf
@@ -43,7 +41,7 @@
 
         <div class="flex space-x-2">
             <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
-            <a href="{{ route('menu') }}" class="bg-gray-200 px-4 py-2 rounded">Batal</a>
+            <a href="{{ route('admin.menu.index') }}" class="bg-gray-200 px-4 py-2 rounded">Batal</a>
         </div>
     </form>
 </div>

@@ -10,6 +10,12 @@ Route::get('/', function () {
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\AuthController;
+
+// Auth Routes
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/menu', function () {
     $menus = Menu::orderBy('id', 'asc')->get();
@@ -55,18 +61,21 @@ Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
 Route::get('/payment/{order}', [OrderController::class, 'payment'])->name('payment.show');
 Route::post('/payment/{order}/confirm', [OrderController::class, 'confirmPayment'])->name('payment.confirm');
 Route::get('/orders/{order}/receipt', [OrderController::class, 'receipt'])->name('orders.receipt');
-// Admin - create menu item (not linked in UI)
-Route::get('/admin/menus/create', [MenuController::class, 'create'])->name('admin.menu.create');
-Route::post('/admin/menus', [MenuController::class, 'store'])->name('admin.menu.store');
-// Admin listings
-Route::get('/admin/menus', [MenuController::class, 'index'])->name('admin.menu.index');
-Route::get('/admin/orders', [OrderController::class, 'adminIndex'])->name('admin.orders.index');
-Route::post('/admin/orders/{order}/complete', [OrderController::class, 'complete'])->name('admin.orders.complete');
-Route::post('/admin/orders/{order}/confirm-payment', [OrderController::class, 'adminConfirmPayment'])->name('admin.orders.confirmPayment');
-// Menu CRUD
-Route::get('/admin/menus/{menu}/edit', [MenuController::class, 'edit'])->name('admin.menu.edit');
-Route::match(['put','patch'], '/admin/menus/{menu}', [MenuController::class, 'update'])->name('admin.menu.update');
-Route::delete('/admin/menus/{menu}', [MenuController::class, 'destroy'])->name('admin.menu.destroy');
+// Admin Routes (Protected)
+Route::middleware(['auth'])->group(function () {
+    // Admin - create menu item (not linked in UI)
+    Route::get('/admin/menus/create', [MenuController::class, 'create'])->name('admin.menu.create');
+    Route::post('/admin/menus', [MenuController::class, 'store'])->name('admin.menu.store');
+    // Admin listings
+    Route::get('/admin/menus', [MenuController::class, 'index'])->name('admin.menu.index');
+    Route::get('/admin/orders', [OrderController::class, 'adminIndex'])->name('admin.orders.index');
+    Route::post('/admin/orders/{order}/complete', [OrderController::class, 'complete'])->name('admin.orders.complete');
+    Route::post('/admin/orders/{order}/confirm-payment', [OrderController::class, 'adminConfirmPayment'])->name('admin.orders.confirmPayment');
+    // Menu CRUD
+    Route::get('/admin/menus/{menu}/edit', [MenuController::class, 'edit'])->name('admin.menu.edit');
+    Route::match(['put','patch'], '/admin/menus/{menu}', [MenuController::class, 'update'])->name('admin.menu.update');
+    Route::delete('/admin/menus/{menu}', [MenuController::class, 'destroy'])->name('admin.menu.destroy');
+});
 
 // Magic recommender
 Route::get('/magic', [MenuController::class, 'magic'])->name('magic');
