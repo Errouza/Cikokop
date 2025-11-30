@@ -98,6 +98,58 @@
 
     .magic-recommendations {
         margin-top: 2rem;
+        padding-bottom: 80px; /* Space for floating cart */
+    }
+
+    /* Floating Cart Bar */
+    .floating-cart-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        z-index: 50;
+        display: none;
+        align-items: center;
+        justify-content: space-between;
+        transition: transform 0.3s ease;
+    }
+    .floating-cart-bar.show { display: flex; }
+    .floating-cart-info {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2e2e2e;
+    }
+    .floating-cart-info strong {
+        color: #dca259;
+        font-size: 1.3rem;
+    }
+    .floating-cart-btn {
+        background-color: #dca259;
+        color: #ffffff;
+        border: none;
+        border-radius: 9999px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        white-space: nowrap;
+        text-decoration: none;
+    }
+    .floating-cart-btn:hover {
+        background-color: #c58c3e;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .floating-cart-btn:active {
+        transform: scale(0.97);
     }
 </style>
 @endpush
@@ -154,6 +206,26 @@
     <div id="recommendations" class="magic-recommendations">
         <!-- rekomendasi muncul di sini -->
     </div>
+    </div>
+</div>
+
+<!-- Floating Cart Bar -->
+<div class="floating-cart-bar" id="floating-cart-bar">
+    <div class="container mx-auto flex justify-end items-center gap-5">
+        <div class="floating-cart-info flex flex-row items-center gap-2">
+            <span id="footer-qty">0 Item</span>
+            <span>•</span>
+            <div class="flex flex-row items-center gap-1">
+                <span>Total Bayar:</span>
+                <strong>Rp <span id="floating-total-price">0</span></strong>
+            </div>
+        </div>
+        <a href="{{ route('cart.index') }}" class="floating-cart-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+            </svg>
+            <span>Keranjang</span>
+        </a>
     </div>
 </div>
 
@@ -347,12 +419,34 @@
         price.innerText = 'Rp ' + Number(it.harga).toLocaleString();
 
         const btn = document.createElement('button');
-        btn.className = 'add-to-cart bg-yellow-500 text-white px-3 py-1 rounded mt-3';
-        btn.setAttribute('data-id', it.id);
-        btn.setAttribute('data-name', it.nama);
-        btn.setAttribute('data-price', it.harga);
-        btn.setAttribute('data-image', it.gambar_url || '');
+        btn.className = 'add-to-cart bg-yellow-500 text-white px-3 py-1 rounded mt-3 transition hover:bg-yellow-600';
         btn.innerText = 'Tambah ke Keranjang';
+        
+        btn.addEventListener('click', async function() {
+            const originalText = btn.innerText;
+            btn.innerText = '...';
+            btn.disabled = true;
+            
+            const success = await addToCart(it.id, it.nama, it.harga, it.gambar_url, it.kategori);
+            
+            if(success) {
+                btn.innerText = 'Berhasil!';
+                btn.classList.remove('bg-yellow-500');
+                btn.classList.add('bg-green-600');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    btn.classList.remove('bg-green-600');
+                    btn.classList.add('bg-yellow-500');
+                }, 1000);
+            } else {
+                btn.innerText = 'Gagal';
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }, 1000);
+            }
+        });
 
         card.appendChild(imgWrap);
         card.appendChild(title);
@@ -361,6 +455,68 @@
 
         return card;
     }
+
+    // Add to Cart Logic
+    async function addToCart(id, name, price, image, category) {
+        try {
+            const response = await fetch('{{ route("cart.add") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ 
+                    id, 
+                    name, 
+                    price, 
+                    image, 
+                    quantity: 1,
+                    category: category || 'food' 
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                updateFooter(result.total_quantity, result.cart_total);
+                return true;
+            }
+            return false;
+        } catch (err) {
+            console.error('Error adding to cart:', err);
+            return false;
+        }
+    }
+
+    function updateFooter(quantity, total) {
+        const footerQtyEl = document.getElementById('footer-qty');
+        const footerTotalEl = document.getElementById('floating-total-price');
+        const floatingBar = document.getElementById('floating-cart-bar');
+        
+        if (footerQtyEl) footerQtyEl.textContent = `${quantity} Item`;
+        if (footerTotalEl) footerTotalEl.textContent = Number(total).toLocaleString('id-ID');
+        
+        if (quantity > 0) {
+            floatingBar.classList.add('show');
+        } else {
+            floatingBar.classList.remove('show');
+        }
+    }
+
+    async function updateFloatingBarFromServer() {
+        try {
+            const response = await fetch('{{ route("cart.status") }}');
+            const result = await response.json();
+            if (result.success) {
+                updateFooter(result.total_quantity, result.cart_total);
+            }
+        } catch (err) {
+            console.error('Failed to update floating bar:', err);
+        }
+    }
+
+    // Initialize cart status
+    document.addEventListener('DOMContentLoaded', updateFloatingBarFromServer);
 
     document.getElementById('recommendBtn').addEventListener('click', function(e){
         const answers = {
